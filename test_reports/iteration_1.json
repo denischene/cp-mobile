@@ -1,0 +1,38 @@
+{
+  "summary": "Frontend-only test of Confort+ Mobile deployment page. All required data-testids present, external links have correct target/rel, XPI + guide download endpoints return 200 with correct MIME (application/x-xpinstall, text/markdown), toolbar.min.js and all its runtime assets (modes-of-use.json, orange-icons-sprite.svg, _locales, styles.min.css) load with 200 status, the Confort+ 'version serveur' pastille correctly injects as <cplus-app-root> with Shadow DOM, clicking it opens the palette (Usage modes, Easy+, Vision+, Reading+, Motor+, etc.). Anchor scroll from hero CTA to #telechargement works. One clear responsive bug found: horizontal overflow of ~105px on mobile (390x844) caused by the ServerVersionInfo <pre> code sample forcing the grid track wider than the viewport.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "ServerVersionInfo (grid + pre)",
+        "issue": "Horizontal overflow on mobile: documentElement.scrollWidth=495 vs innerWidth=390. The <pre class='overflow-x-auto'> containing the long code snippet '<script src=\"https://votre-site.fr/js/toolbar.min.js\">' has intrinsic scrollWidth ~421px, and because its parent grid track (md:grid-cols-2 collapsed to single column on mobile) does NOT have min-w-0, it grows to the pre's intrinsic content width (471px), pushing the whole page to 495px. Result: user can scroll page horizontally on mobile and header text 'confort-plus.fr — site officiel' gets clipped.",
+        "selector": "[data-testid=\"server-version-section\"] > div (grid container) and its <pre>",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Confort+ palette (shadow DOM)",
+        "issues": ["Palette content is rendered in English ('Usage modes', 'Choose a usage mode and validate...') even though the site is in French and /_locales/fr/messages.json returns 200. The toolbar fetches /_locales/en/messages.json first (based on Playwright's navigator.language) and doesn't fall back to fr. This is a limitation of the upstream toolbar.min.js and NOT a blocker for this deployment page, but worth mentioning to the user since the marketing copy claims a French experience."]
+      }
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Fix mobile horizontal overflow: in /app/frontend/src/components/deployment/ServerVersionInfo.jsx, add `min-w-0` to the two grid children (the left <div> and the right rounded-2xl <div>), OR wrap the <pre> in a `min-w-0` container, OR add `break-all`/`whitespace-pre-wrap` on the <code>. Simplest fix: change the grid container to `grid md:grid-cols-2 gap-10 items-start min-w-0` AND add `min-w-0` on the right column so the pre's overflow-x-auto actually constrains it instead of expanding the track.",
+    "(Optional) Consider forcing the toolbar locale to French via a small config/global before /js/toolbar.min.js loads, or accept English fallback."
+  ],
+  "critical_code_review_comments": [
+    "ServerVersionInfo.jsx grid cells lack min-w-0, which is a very common Tailwind grid pitfall when a child has overflow-x-auto content — this is the root cause of the mobile overflow.",
+    "Header 'confort-plus.fr — site officiel' text in SiteHeader gets clipped due to the same page-level overflow; not an issue in the header itself.",
+    "Good: all interactive elements have data-testid, external links use target=_blank + rel='noopener noreferrer', /downloads/*.xpi is served with application/x-xpinstall which is correct for Firefox add-on install prompt."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "90%"},
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All testids and static assets verified working. Only remaining issue is mobile horizontal overflow caused by ServerVersionInfo's <pre>. Re-test at viewport 390x844 after fix: expect documentElement.scrollWidth === innerWidth (390). Confort+ shadow palette opens correctly on click of <cplus-app-root>'s inner button.",
+  "rca of the issue": "In Tailwind CSS grid, grid items have `min-width: auto` by default which prevents shrinking below the intrinsic size of their content. The ServerVersionInfo right column contains a <pre class='overflow-x-auto'> with a long non-wrappable code line (~421px). Because the grid cell doesn't have min-w-0, it expands to fit the pre's intrinsic width, in turn expanding the grid container to 471px, exceeding the 390px mobile viewport by ~105px. Reproduction: set viewport to 390x844, load /, evaluate document.documentElement.scrollWidth -> 495. Mitigation: add `min-w-0` to the grid children (both cells) in /app/frontend/src/components/deployment/ServerVersionInfo.jsx line 7-8/32."
+}
