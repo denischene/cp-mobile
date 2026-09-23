@@ -1,0 +1,18 @@
+// Test IDs for the Confort+ mobile deployment/presentation page.
+export const DEPLOYMENT = {
+	officialSiteLink: 'nav-official-site-link',
+	downloadNavLink: 'nav-download-link',
+	githubNavLink: 'nav-github-link',
+	heroBadgeMobile: 'hero-badge-mobile-extension',
+	heroBadgeFirefox: 'hero-badge-firefox-android',
+	heroBadgeExperimental: 'hero-badge-experimental',
+	heroDownloadCta: 'hero-download-cta',
+	experimentalBanner: 'experimental-banner',
+	downloadCard: 'download-card',
+	downloadXpiButton: 'download-xpi-button',
+	downloadGuideLink: 'download-guide-link',
+	downloadGithubLink: 'download-github-link',
+	serverVersionSection: 'server-version-section',
+	footerOfficialSiteLink: 'footer-official-site-link',
+	footerGithubLink: 'footer-github-link',
+};

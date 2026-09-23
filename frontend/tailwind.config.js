@@ -54,6 +54,12 @@ module.exports = {
           '3': 'hsl(var(--chart-3))',
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))'
+        },
+        confort: {
+          orange: '#FF7900',
+          'orange-dark': '#D96500',
+          ink: '#0D0D0D',
+          slate: '#1F1F1F'
         }
       },
       keyframes: {
