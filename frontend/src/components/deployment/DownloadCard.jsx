@@ -33,7 +33,7 @@ export const DownloadCard = () => {
               href="/downloads/orange-confort-plus-5.5.1-android.xpi"
               download
               data-testid={DEPLOYMENT.downloadXpiButton}
-              className="inline-flex items-center gap-2 rounded-full bg-confort-orange px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-confort-orange-dark"
+              className="inline-flex items-center gap-2 rounded-full bg-confort-orange px-5 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-confort-orange-dark"
             >
               <Download className="w-4 h-4" aria-hidden="true" />
               Télécharger le .xpi
