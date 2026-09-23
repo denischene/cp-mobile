@@ -40,7 +40,7 @@ export const Hero = () => {
         <a
           href="#telechargement"
           data-testid={DEPLOYMENT.heroDownloadCta}
-          className="mt-8 inline-flex items-center rounded-full bg-confort-orange px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-confort-orange/30 transition-transform hover:-translate-y-0.5 hover:bg-confort-orange-dark"
+          className="mt-8 inline-flex items-center rounded-full bg-confort-orange px-6 py-3 text-sm font-semibold text-black shadow-lg shadow-confort-orange/30 transition-transform hover:-translate-y-0.5 hover:bg-confort-orange-dark"
         >
           Télécharger le .xpi Android
         </a>
