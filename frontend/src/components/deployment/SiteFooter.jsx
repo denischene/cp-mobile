@@ -4,8 +4,9 @@ import { DEPLOYMENT } from "@/constants/testIds";
 export const SiteFooter = () => {
   return (
     <footer className="bg-confort-ink text-white/70">
+      <div className="border-t-4 border-t-confort-orange" />
       <div className="max-w-5xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <p className="text-sm m-0 max-w-md">
+        <p className="text-sm m-0 max-w-md dark:text-white">
           Adaptation expérimentale et communautaire, non officielle, du projet open-source{" "}
           <span className="text-white">Orange Confort+</span> pour Firefox Nightly Android.
         </p>
@@ -15,7 +16,7 @@ export const SiteFooter = () => {
             target="_blank"
             rel="noopener noreferrer"
             data-testid={DEPLOYMENT.footerOfficialSiteLink}
-            className="text-sm font-medium hover:text-confort-orange transition-colors"
+            className="text-sm font-medium text-white/70 dark:text-white hover:text-confort-orange transition-colors"
           >
             Site officiel
           </a>
@@ -24,9 +25,9 @@ export const SiteFooter = () => {
             target="_blank"
             rel="noopener noreferrer"
             data-testid={DEPLOYMENT.footerGithubLink}
-            className="inline-flex items-center gap-1.5 text-sm font-medium hover:text-confort-orange transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-white/70 dark:text-white hover:text-confort-orange transition-colors"
           >
-            <Github className="w-4 h-4" aria-hidden="true" />
+            <Github className="w-4 h-4 text-confort-orange" aria-hidden="true" />
             GitHub
           </a>
         </div>

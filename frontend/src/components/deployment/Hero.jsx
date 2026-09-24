@@ -4,7 +4,7 @@ import { DEPLOYMENT } from "@/constants/testIds";
 const Badge = ({ testId, icon: Icon, children }) => (
   <span
     data-testid={testId}
-    className="inline-flex items-center gap-1.5 rounded-full border border-confort-orange/40 bg-white dark:bg-white/5 px-3 py-1 text-xs font-semibold text-confort-ink dark:text-white/90"
+    className="inline-flex items-center gap-1.5 rounded-full border border-confort-orange/40 bg-white dark:bg-confort-ink px-3 py-1 text-xs font-semibold text-confort-ink dark:text-confort-orange"
   >
     <Icon className="w-3.5 h-3.5 text-confort-orange" aria-hidden="true" />
     {children}
@@ -31,7 +31,7 @@ export const Hero = () => {
           <br />
           arrive sur mobile.
         </h1>
-        <p className="mt-6 text-base md:text-lg text-confort-ink/70 dark:text-white/60 max-w-2xl leading-relaxed">
+        <p className="mt-6 text-base md:text-lg text-confort-ink/70 dark:text-white max-w-2xl leading-relaxed">
           Confort+ facilite la lecture et la navigation sur les pages web : texte plus lisible,
           vocalisation, gros pointeur, boutons multi-clics et modes d'usage. Ce portage adapte la
           palette et le fonctionnement de l'extension pour les petits écrans de Firefox Nightly
