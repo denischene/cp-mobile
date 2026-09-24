@@ -1,3 +1,4 @@
+/* global dump */
 /*
  * orange-confort-plus - version 5.5.1 - 23/09/2026
  * Enhance user experience on web sites

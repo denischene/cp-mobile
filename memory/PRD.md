@@ -1,57 +1,42 @@
-# Orange Confort+ — Portage Firefox Nightly Android + Page de déploiement
+# PRD – Confort+ Mobile (Firefox Nightly Android)
 
-## Problème / Objectif
-1. Adapter l'extension navigateur Orange Confort+ (dépôt GitHub Orange-OpenSource,
-   branche develop) pour qu'elle fonctionne sur Firefox Nightly Android. Produire un
-   .xpi + instructions. (FAIT — session précédente)
-2. Construire une page de déploiement/présentation (frontend React) reprenant la
-   charte graphique de www.confort-plus.fr, avec lien de téléchargement du .xpi,
-   cadrage "extension pour téléphone mobile" + nature expérimentale, et la "version
-   serveur" de Confort+ (script auto-injecté) fonctionnelle sur cette même page.
-   (FAIT — cette session, 2026-09-23)
+## Problème original
+Porter l'extension navigateur « Orange Confort+ » (GitHub: Orange-OpenSource/Orange-Confort-plus, branche develop) pour fonctionner sur Firefox Nightly Android. Créer une page de déploiement web correspondant à la charte graphique de confort-plus.fr, servant le .xpi et intégrant la « version serveur » du widget Confort+ directement dans la page.
 
-## Contexte technique
-- Extension source: /app/confort-src (branche develop, v5.5.1). Build Android:
-  /app/confort-src/orange-confort-plus-5.5.1-android.xpi, guide:
-  /app/confort-src/ANDROID_FIREFOX.md.
-- Version "serveur" Confort+ (dist/serveur): script JS unique (toolbar.min.js) qui
-  s'auto-injecte en Shadow DOM (custom element <cplus-app-root>) et fetch ses
-  ressources (css/, assets/json, assets/icons, _locales) via window.location.origin.
-- Frontend app (/app/frontend) = React + Tailwind + shadcn, sert désormais la page
-  de présentation du portage mobile (pas de backend custom impliqué, page statique).
+## Architecture
+```
+/app/
+├── frontend/                        # React + Tailwind
+│   ├── public/
+│   │   ├── index.html               # Injection Confort+ server script (Shadow DOM / deferred load)
+│   │   ├── js/toolbar.min.js        # Widget Confort+ compilé
+│   │   └── css/styles.min.css       # Styles Confort+ compilés
+│   ├── src/
+│   │   ├── pages/
+│   │   │   └── DeploymentPage.jsx   # Page d'accueil de déploiement
+│   │   └── components/deployment/   # Hero, DownloadCard, InstallSteps, etc.
+├── confort-src/                     # Code source extension cloné
+│   ├── dist/serveur/                # Version serveur compilée
+│   ├── orange-confort-plus-5.5.1-android.xpi
+│   └── ANDROID_FIREFOX.md
+```
 
-## Réalisé (2026-09-23)
-- Copié les assets de la "version serveur" (css/, js/, assets/, _locales/,
-  COPYING.txt) dans /app/frontend/public/ (racine, requis par le fetch absolu du script).
-- Copié le .xpi et le guide ANDROID_FIREFOX.md dans /app/frontend/public/downloads/.
-- Ajouté `<script src="/js/toolbar.min.js">` dans public/index.html (avant `</body>`)
-  → pastille Confort+ active sur toute la page.
-- Page DeploymentPage.jsx (fr) avec composants: SiteHeader, ExperimentalBanner, Hero,
-  DownloadCard (+ InstallSteps), ServerVersionInfo, SiteFooter — charte confort-plus.fr
-  (orange #FF7900, header sombre #0D0D0D, typographie large, liens GitHub/site officiel).
-- Couleur --primary (index.css) et tailwind.config.js (colors.confort) alignés sur
-  l'orange Orange (#FF7900 / hsl 28 100% 50%).
-- App.js: route "/" rend DeploymentPage (ancien template Emergent retiré).
-- Bug corrigé (testing_agent): overflow horizontal mobile 390px causé par un <pre>
-  de code sans `min-w-0` dans ServerVersionInfo.jsx → corrigé (min-w-0 + break-all).
-- Testing agent: 1 itération, bug HIGH fixé, tout le reste OK (data-testid, liens
-  externes target=_blank/rel=noopener, téléchargement .xpi 200 + mimetype
-  application/x-xpinstall, guide .md 200, script serveur + ressources 200, palette
-  Confort+ s'ouvre bien en Shadow DOM).
+## Fonctionnalités implémentées
+- [x] Page de déploiement React (Hero, DownloadCard, InstallSteps, ServerVersionInfo, Header, Footer)
+- [x] Branding Orange Confort+ (charte graphique confort-plus.fr)
+- [x] Téléchargement du .xpi comme asset statique
+- [x] Injection du widget Confort+ « version serveur » (toolbar.min.js + styles.min.css)
+- [x] Correction overflow mobile (ServerVersionInfo)
+- [x] Boutons CTA texte noir pour meilleur contraste
+- [x] Titre section mis à jour : « Test temporaire sur Firefox Nightly Android » (24 sept. 2026)
+- [x] Instructions d'installation remplacées par 2 sections A/B détaillées (24 sept. 2026)
+- [x] Correction erreur toolbar.min.js (chargement différé + suppression erreur Emergent overlay) (24 sept. 2026)
 
-## Limitation connue (non bloquante)
-- La palette Confort+ (version serveur, upstream toolbar.min.js) s'affiche en anglais
-  malgré /_locales/fr/ disponible : dépend de navigator.language du navigateur/test,
-  comportement du script tiers non modifié dans cette session.
+## Limitations connues
+- Extension .xpi non signée (installation permanente impossible sans signature AMO)
+- Palette Confort+ parfois en anglais selon la langue du navigateur (limitation upstream)
 
-## Contrainte connue (portage extension)
-Firefox Android n'installe de façon permanente que des .xpi SIGNÉS par Mozilla.
-- Test temporaire: web-ext run -t firefox-android (USB/adb) — documenté sur la page.
-- Installation permanente: signer via AMO (web-ext sign --channel=unlisted) —
-  documenté sur la page (carte "Installation permanente").
-
-## Backlog / Next
-- Signature AMO du .xpi (nécessite clés API Mozilla de l'utilisateur) si install
-  permanente souhaitée.
-- Tester réellement sur téléphone Android physique (retour utilisateur).
-- (Optionnel) Forcer la locale FR du script serveur tiers si le mélange EN/FR gêne.
+## Backlog
+- P0: Corrections basées sur retours tests appareil réel
+- P1: Workflow de signature AMO pour installation permanente
+- P2: Icône mobile personnalisée pour l'extension

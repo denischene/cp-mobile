@@ -23,14 +23,23 @@
         -->
         <title>Confort+ Mobile — Portage expérimental Firefox Android</title>
         <meta name="theme-color" content="#0d0d0d" />
-        <script>window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
+        <script>window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);window.addEventListener("error",function(e){if((e.filename&&e.filename.indexOf("toolbar")!==-1)||(e.message&&e.message.indexOf("mainButton")!==-1)){e.stopImmediatePropagation();e.preventDefault();return true}},true);var _origOnerror=window.onerror;window.onerror=function(m,s,l,c,e){if((s&&s.indexOf("toolbar")!==-1)||(m&&m.indexOf("mainButton")!==-1)){return true}if(_origOnerror)return _origOnerror.apply(this,arguments)};</script>
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
         <!-- Confort+ "version serveur" : injecte la pastille et la palette d'accessibilité directement dans cette page -->
-        <script src="/js/toolbar.min.js"></script>
+        <script>
+          window.addEventListener("load", function () {
+            try {
+              var s = document.createElement("script");
+              s.src = "/js/toolbar.min.js";
+              s.onerror = function () { console.warn("Confort+ toolbar failed to load"); };
+              document.body.appendChild(s);
+            } catch (e) { console.warn("Confort+ init error", e); }
+          });
+        </script>
         <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

@@ -6,11 +6,10 @@ export const DownloadCard = () => {
   return (
     <section id="telechargement" className="bg-confort-ink/[0.03]">
       <div className="max-w-5xl mx-auto px-6 py-16">
-        <h2 className="text-3xl font-bold text-confort-ink mb-2">Téléchargement de l'extension</h2>
+        <h2 className="text-3xl font-bold text-confort-ink mb-2">Test temporaire sur Firefox Nightly Android</h2>
         <p className="text-confort-ink/70 max-w-2xl mb-8">
-          Paquet non signé, destiné aux tests sur appareil réel via débogage USB ou après
-          signature AMO. Firefox Android n'installe de façon permanente que les extensions
-          signées par Mozilla.
+          Extension non signée à charger manuellement dans Firefox Nightly pour Android.
+          Suivez les étapes ci-dessous pour configurer le navigateur puis installer l'extension.
         </p>
 
         <div
