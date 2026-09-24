@@ -1,0 +1,1 @@
+{"ts": "2026-09-24T14:43:28", "name": "prod-blank-check", "mode": "ran-inline", "url": "https://mobile-confort-build.emergent.host/", "passed": false, "total_ms": 2940, "pw_import_ms": 1444, "launch_ms": null, "first_goto_ms": null, "body_ms": null, "body_gotos": []}
