@@ -1,7 +1,10 @@
-import { Download, Github } from "lucide-react";
+import { Download, Github, Moon, Sun } from "lucide-react";
 import { DEPLOYMENT } from "@/constants/testIds";
+import { useTheme } from "@/components/deployment/ThemeProvider";
 
 export const SiteHeader = () => {
+  const { dark, toggle } = useTheme();
+
   return (
     <header className="bg-confort-ink text-white">
       <div className="border-b border-white/10">
@@ -41,6 +44,14 @@ export const SiteHeader = () => {
             <Github className="w-4 h-4" aria-hidden="true" />
             GitHub
           </a>
+          <button
+            onClick={toggle}
+            data-testid={DEPLOYMENT.themeToggle}
+            aria-label={dark ? "Passer en mode clair" : "Passer en mode sombre"}
+            className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-confort-orange/20 text-white/80 hover:text-confort-orange transition-colors"
+          >
+            {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
         </nav>
       </div>
     </header>

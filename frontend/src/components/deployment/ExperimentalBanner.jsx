@@ -5,12 +5,12 @@ export const ExperimentalBanner = () => {
   return (
     <div
       data-testid={DEPLOYMENT.experimentalBanner}
-      className="border-y border-confort-orange/30 bg-confort-orange/10"
+      className="border-y border-confort-orange/30 bg-confort-orange/10 dark:bg-confort-orange/5"
     >
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-start gap-3">
         <AlertTriangle className="w-5 h-5 text-confort-orange shrink-0 mt-0.5" aria-hidden="true" />
-        <p className="text-sm text-confort-ink/80 leading-relaxed">
-          <span className="font-semibold text-confort-ink">Portage expérimental non officiel.</span>{" "}
+        <p className="text-sm text-confort-ink/80 dark:text-white/70 leading-relaxed">
+          <span className="font-semibold text-confort-ink dark:text-white">Portage expérimental non officiel.</span>{" "}
           Cette adaptation mobile de Confort+ n'est pas distribuée par Orange ni sur les stores
           officiels. Elle est fournie pour test technique sur Firefox Nightly Android uniquement.
           Utilisez-la à vos risques et partagez vos retours via{" "}

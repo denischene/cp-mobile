@@ -57,7 +57,7 @@ function Readability(doc, options) {
                 var msg = Array.prototype.map.call(arguments, (function(x) {
                     return x && x.nodeName ? logNode(x) : x;
                 })).join(" ");
-                dump("Reader: (Readability) " + msg + "\n");
+                dump("Reader: (Readability) " + msg + "\n"); // eslint-disable-line no-undef
             }
         };
     } else {

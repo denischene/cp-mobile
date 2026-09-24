@@ -4,16 +4,16 @@ import { DEPLOYMENT } from "@/constants/testIds";
 const Badge = ({ testId, icon: Icon, children }) => (
   <span
     data-testid={testId}
-    className="inline-flex items-center gap-1.5 rounded-full border border-confort-orange/40 bg-white px-3 py-1 text-xs font-semibold text-confort-orange"
+    className="inline-flex items-center gap-1.5 rounded-full border border-confort-orange/40 bg-white dark:bg-white/5 px-3 py-1 text-xs font-semibold text-confort-ink dark:text-white/90"
   >
-    <Icon className="w-3.5 h-3.5" aria-hidden="true" />
+    <Icon className="w-3.5 h-3.5 text-confort-orange" aria-hidden="true" />
     {children}
   </span>
 );
 
 export const Hero = () => {
   return (
-    <section className="bg-white">
+    <section className="bg-white dark:bg-confort-ink transition-colors">
       <div className="max-w-5xl mx-auto px-6 pt-16 pb-12">
         <div className="flex flex-wrap gap-2 mb-6">
           <Badge testId={DEPLOYMENT.heroBadgeMobile} icon={Smartphone}>
@@ -26,12 +26,12 @@ export const Hero = () => {
             Version expérimentale
           </Badge>
         </div>
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] text-confort-ink max-w-3xl">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] text-confort-ink dark:text-white max-w-3xl">
           Confort<span className="text-confort-orange">+</span>
           <br />
           arrive sur mobile.
         </h1>
-        <p className="mt-6 text-base md:text-lg text-confort-ink/70 max-w-2xl leading-relaxed">
+        <p className="mt-6 text-base md:text-lg text-confort-ink/70 dark:text-white/60 max-w-2xl leading-relaxed">
           Confort+ facilite la lecture et la navigation sur les pages web : texte plus lisible,
           vocalisation, gros pointeur, boutons multi-clics et modes d'usage. Ce portage adapte la
           palette et le fonctionnement de l'extension pour les petits écrans de Firefox Nightly

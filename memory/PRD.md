@@ -6,15 +6,15 @@ Porter l'extension navigateur « Orange Confort+ » (GitHub: Orange-OpenSource/O
 ## Architecture
 ```
 /app/
-├── frontend/                        # React + Tailwind
+├── frontend/
 │   ├── public/
-│   │   ├── index.html               # Injection Confort+ server script (Shadow DOM / deferred load)
+│   │   └── index.html               # Injection Confort+ server script (deferred load)
 │   │   ├── js/toolbar.min.js        # Widget Confort+ compilé
 │   │   └── css/styles.min.css       # Styles Confort+ compilés
 │   ├── src/
 │   │   ├── pages/
 │   │   │   └── DeploymentPage.jsx   # Page d'accueil de déploiement
-│   │   └── components/deployment/   # Hero, DownloadCard, InstallSteps, etc.
+│   │   └── components/deployment/   # Hero, DownloadCard, InstallSteps, ThemeProvider, etc.
 ├── confort-src/                     # Code source extension cloné
 │   ├── dist/serveur/                # Version serveur compilée
 │   ├── orange-confort-plus-5.5.1-android.xpi
@@ -28,9 +28,11 @@ Porter l'extension navigateur « Orange Confort+ » (GitHub: Orange-OpenSource/O
 - [x] Injection du widget Confort+ « version serveur » (toolbar.min.js + styles.min.css)
 - [x] Correction overflow mobile (ServerVersionInfo)
 - [x] Boutons CTA texte noir pour meilleur contraste
-- [x] Titre section mis à jour : « Test temporaire sur Firefox Nightly Android » (24 sept. 2026)
-- [x] Instructions d'installation remplacées par 2 sections A/B détaillées (24 sept. 2026)
-- [x] Correction erreur toolbar.min.js (chargement différé + suppression erreur Emergent overlay) (24 sept. 2026)
+- [x] Titre section « Test temporaire sur Firefox Nightly Android »
+- [x] Instructions d'installation en 2 sections A/B détaillées
+- [x] **Mode sombre** avec toggle dans le header + persistance localStorage (24 sept. 2026)
+- [x] **Badges mode clair** : textes en noir, pictos et cadres orange (24 sept. 2026)
+- [x] **QR Code** : téléchargement direct du .xpi depuis mobile (qrcode.react) (24 sept. 2026)
 
 ## Limitations connues
 - Extension .xpi non signée (installation permanente impossible sans signature AMO)

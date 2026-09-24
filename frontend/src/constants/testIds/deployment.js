@@ -1,5 +1,7 @@
 // Test IDs for the Confort+ mobile deployment/presentation page.
 export const DEPLOYMENT = {
+	themeToggle: 'theme-toggle-button',
+	qrCodeSection: 'qr-code-section',
 	officialSiteLink: 'nav-official-site-link',
 	downloadNavLink: 'nav-download-link',
 	githubNavLink: 'nav-github-link',
