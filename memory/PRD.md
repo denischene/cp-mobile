@@ -75,3 +75,67 @@ Porter l'extension navigateur « Orange Confort+ » (GitHub: Orange-OpenSource/O
 - P1 : « Contrastes renforcés » ne doit modifier que les textes à faible contraste, pas les fonds
 - P1 : crash Chrome (localStorage) sur Le Monde ; homogénéité de langue TTS
 - ON HOLD (demande utilisateur) : version serveur qui écrase la version extension
+
+## Journal (01/06/2026 — lot « pastille clavier / drag mobile / vocalisation / contrastes »)
+Extension (src `confort-src`, branche feat-mobile-color, v6.0.0-alpha.1) :
+- `drag-drop.service.ts` : mode déplacement clavier (Tab → Espace → flèches → Espace/Échap),
+  pas de 16 px (64 px avec Maj), `setPointerCapture` + `touchmove preventDefault` + `touch-action: none`
+  (la page ne scrolle plus pendant le drag mobile), position par défaut bas-droite sur mobile
+  (`matchMedia('(max-width: 36em), (pointer: coarse)')`), garde `positionRestored` pour ne pas
+  écraser la position par défaut.
+- `app.component.ts` + `confort-plus.scss` : 4 triangles noirs (SVG, stroke #fff 5, paint-order stroke)
+  affichés en mode déplacement clavier ET pendant le drag souris (classe `sc-confort-plus--moving`).
+- `read-aloud.service.ts` : réécriture — états off/suspended/on, clic = On, re-clic même texte = Suspended,
+  clic sur un autre texte = coupe et lit le nouveau, 2e clic sur un élément activable = activation,
+  en Suspended un clic sur lien/bouton vocalise sans activer, Échap et clic droit → Suspended,
+  déclenchement au focus clavier (focusin, garde 400 ms après un pointerdown), infobulle supprimée
+  dès le 1er clic/tap, info furtive 2 s avec l'étendue (`readAloud_scope_*` ajoutés dans fr/en/es/it/pl),
+  curseur Lire à bord blanc épais, focus Lire (contour noir + anneau blanc), curseur/focus par défaut
+  pendant la synthèse (classe `cplus-read-aloud-speaking`), `utterance.lang` forcé sur la langue du document,
+  renforcement du rendu des éléments actionnables au survol/focus selon « Lien bien visible ».
+- `color-contrast.service.ts` : « Contrastes renforcés » ne pose plus de couleurs globales ; calcul du
+  ratio WCAG par élément (texte propre uniquement) et passage en #000 ou #fff seulement si ratio < 4.5,
+  restauration exacte des styles inline au changement de valeur.
+- `clearly-links.service.ts` : expose `currentValue`.
+- `01-variables/_index.scss` : `$dropdown-item-padding-y: .5rem` (corrige l'échec sass « 0.5em et 0.0625rem
+  ont des unités incompatibles » qui bloquait tout le build CSS).
+
+Livrables régénérés : `orange-confort-plus-6.0.0-alpha.1-android.xpi`, `dist/serveur/*` copiés dans
+`/app/frontend/public`, ZIP statique `/app/frontend/public/downloads/confort-plus-site-statique-cpm.zip`.
+
+Vérifications automatisées (Playwright sur la page de déploiement, version serveur) :
+mode déplacement clavier OK (classe + flèches visibles + déplacement + sortie Échap), position mobile
+bas-droite OK, states vocalisation OK (suspended → on → suspended, clic lien bloqué, clic droit),
+spans nettoyés au retour à « sans vocalisation », contrastes renforcés : 10 éléments corrigés,
+fond de page inchangé, restauration complète. Aucune erreur console.
+
+## Journal (01/06/2026 — lot « clic adapté / valeurs par défaut / robustesse Chrome »)
+- `click-facilite.service.ts` : zones de clic resserrées (padding-block 1.125rem, padding-inline .125rem
+  au lieu de 1.375rem partout), nouvelle cible `CLICK_FACILITE_TARGETS` incluant select, listbox/combobox,
+  inputs, textarea, summary, label[for], role=button/link/tab ; les éléments déjà >= 44x44 px (tuiles,
+  grandes cartes) ne sont plus agrandis mais gardent le surlignage au survol/focus
+  (classe `click-facilite-target`) ; les contrôles de formulaire utilisent min-height/min-width 44 px
+  (classe `click-facilite-enlarged-control`) ; reset nettoie les trois classes.
+- `constantes.core.ts` : `CLICK_FACILITE_MIN_TARGET = 44`, `CLICK_FACILITE_TARGETS`.
+- `modes-of-use.json` (version 1.0.47 → **1.0.48**, nécessaire pour que les réglages stockés soient
+  rafraîchis) :
+  * lecturePlus : colorContrast par défaut = `reinforcedContrasts` (au lieu de `black_ivory`)
+  * visionPlus : colorContrast = `noModifications,reinforcedContrasts,ivory_black` (défaut contrastes
+    renforcés), cursorAspect = `bigCursor_black,hugeCursor_black`, focusAspect = `big_black,huge_black`,
+    scrollAspect = `big_black,huge_black`, linkStyle = `darkblue_orange_brown` par défaut
+- Chrome / robustesse (cause probable du « l'extension se ferme après inactivité ») :
+  * `extension/scripts/main.ts` : helpers `injectScript` / `isToolbarPresent` / `injectToolbar` —
+    plus aucune double injection de `toolbar.js` (les services sont des singletons qui lèvent une
+    exception à la 2e exécution et cassaient la palette), tous les `executeScript` ont un `.catch`,
+    `tabs.onUpdated` ignore les mises à jour sans navigation (les sites qui s'auto-rafraîchissent
+    comme Le Monde en déclenchent des dizaines), logs `storage.onChanged` désactivés.
+  * `extension/services/local-storage.service.ts` : garde `isExtensionContextAlive()`, tous les appels
+    `chrome.storage` en try/catch + `.catch`, repli sur `window.localStorage`
+    (clés `cplus-<key>-<hostname>`, donc sans collision avec la version serveur), tabId redemandé
+    paresseusement si le service worker a été recyclé.
+
+Vérifications (Playwright, version serveur sur la page de déploiement) : select → min-height 44 px,
+grande tuile → aucun agrandissement (largeur inchangée), petit lien → +4 px seulement en largeur
+(contre +44 px avant) et +37 px en hauteur, reset complet des classes ; modes-of-use servi en 1.0.48
+avec toutes les nouvelles valeurs. Aucune erreur console. Le durcissement Chrome (service worker)
+n'est pas testable en preview : à valider par l'utilisateur sur Le Monde.

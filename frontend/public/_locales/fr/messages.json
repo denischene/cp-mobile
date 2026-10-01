@@ -1160,5 +1160,17 @@
 	},
 	"lightBgColor": {
 		"message": "Colorer (fond clair)"
+	},
+	"readAloud_scope_word": {
+		"message": "Mot"
+	},
+	"readAloud_scope_sentence": {
+		"message": "Phrase"
+	},
+	"readAloud_scope_paragraph": {
+		"message": "Paragraphe"
+	},
+	"readAloud_scope_all": {
+		"message": "Toute la page"
 	}
 }

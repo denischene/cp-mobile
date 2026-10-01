@@ -1,10 +1,10 @@
 @charset "UTF-8";/*!
- * Boosted  v5.3.2 (https://boosted.orange.com/)
- * Copyright 2014-2023 The Boosted Authors
- * Copyright 2014-2023 Orange SA
+ * Boosted  v5.3.8 (https://boosted.orange.com/)
+ * Copyright 2014-2025 The Boosted Authors
+ * Copyright 2014-2025 Orange SA
  * Licensed under MIT (https://github.com/Orange-OpenSource/Orange-Boosted-Bootstrap/blob/main/LICENSE)
  * This a fork of Bootstrap: Initial license below
- * Bootstrap  v5.3.2 (https://getbootstrap.com/)
- * Copyright 2011-2023 The Bootstrap Authors
+ * Bootstrap  v5.3.8 (https://getbootstrap.com/)
+ * Copyright 2011-2025 The Bootstrap Authors
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
- */:root{}*,::after,::before{box-sizing:border-box}:root{scroll-padding-top:3.75rem}@media (prefers-reduced-motion:no-preference){:root{scroll-behavior:smooth}}@media (min-width:1024px){:root{scroll-padding-top:7.5rem}}::-moz-focus-inner{padding:0;border-style:none}::-webkit-datetime-edit-day-field,::-webkit-datetime-edit-fields-wrapper,::-webkit-datetime-edit-hour-field,::-webkit-datetime-edit-minute,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-text,::-webkit-datetime-edit-year-field{padding:0}::-webkit-inner-spin-button{height:auto}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-color-swatch-wrapper{padding:0}::-webkit-file-upload-button{font:inherit;-webkit-appearance:button}::file-selector-button{font:inherit;-webkit-appearance:button}:root{}
+ */:root{color:var(--bs-body-color);background-color:var(--bs-body-bg)}:root{color-scheme:light;--bs-font-sans-serif:HelvNeueOrange/*rtl:insert:Arabic*/,"Helvetica Neue",Helvetica,"Noto Sans","Liberation Sans",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";--bs-body-font-family:var(--bs-font-sans-serif);--bs-body-font-size:1rem;--bs-body-font-weight:400;--bs-body-line-height:1.125;--bs-body-color:#000;--bs-body-bg:#fff}*,::after,::before{box-sizing:border-box}:root{scroll-padding-top:3.75rem}@media (min-width:1024px){:root{scroll-padding-top:7.5rem}}@media (prefers-reduced-motion:no-preference){:root{scroll-behavior:smooth}}:root>*{position:relative;margin:0;font-family:var(--bs-body-font-family);font-synthesis:none;font-size:var(--bs-body-font-size);font-weight:var(--bs-body-font-weight);line-height:var(--bs-body-line-height);text-align:var(--bs-body-text-align);letter-spacing:-.00625rem;background-color:var(--bs-body-bg);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:subpixel-antialiased;text-rendering:optimizespeed}::-moz-focus-inner{padding:0;border-style:none}::-webkit-datetime-edit-day-field,::-webkit-datetime-edit-fields-wrapper,::-webkit-datetime-edit-hour-field,::-webkit-datetime-edit-minute,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-text,::-webkit-datetime-edit-year-field{padding:0}::-webkit-inner-spin-button{height:auto}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-color-swatch-wrapper{padding:0}::-webkit-file-upload-button{font:inherit;-webkit-appearance:button}::file-selector-button{font:inherit;-webkit-appearance:button}:root{}

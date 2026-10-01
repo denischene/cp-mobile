@@ -1,5 +1,5 @@
 {
-	"version": "1.0.47",
+	"version": "1.0.48",
 	"modes": [
 		{
 			"facilePlus": [
@@ -257,7 +257,7 @@
 				},
 				{
 					"focusAspect": {
-						"values": "noModifications,big_white,huge_white",
+						"values": "noModifications,big_black,huge_black",
 						"valueSelected": 1,
 						"isTool": true,
 						"order": 13
@@ -265,7 +265,7 @@
 				},
 				{
 					"scrollAspect": {
-						"values": "noModifications,big_white,huge_white",
+						"values": "noModifications,big_black,huge_black",
 						"valueSelected": 1,
 						"isTool": true,
 						"order": 11
@@ -273,7 +273,7 @@
 				},
 				{
 					"colorContrast": {
-						"values": "noModifications,ivory_black,white_blue",
+						"values": "noModifications,reinforcedContrasts,ivory_black",
 						"valueSelected": 1,
 						"isTool": true,
 						"order": 5
@@ -281,7 +281,7 @@
 				},
 				{
 					"cursorAspect": {
-						"values": "noModifications,bigCursor_white,hugeCursor_green",
+						"values": "noModifications,bigCursor_black,hugeCursor_black",
 						"valueSelected": 1,
 						"isTool": true,
 						"order": 9
@@ -289,7 +289,7 @@
 				},
 				{
 					"linkStyle": {
-						"values": "noModifications,lightblue_orange_lightgreen,yellow_orange_lightgreen",
+						"values": "noModifications,darkblue_orange_brown,yellow_orange_lightgreen",
 						"valueSelected": 1,
 						"isTool": true,
 						"order": 7
@@ -634,7 +634,7 @@
 				{
 					"colorContrast": {
 						"values": "noModifications,reinforcedContrasts,black_ivory",
-						"valueSelected": 2,
+						"valueSelected": 1,
 						"isTool": true,
 						"order": 8
 					}

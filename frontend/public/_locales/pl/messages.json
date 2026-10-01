@@ -1175,5 +1175,17 @@
 	},
 	"lightBgColor": {
 		"message": "Kolor (jasne tło)"
+	},
+	"readAloud_scope_word": {
+		"message": "Słowo"
+	},
+	"readAloud_scope_sentence": {
+		"message": "Zdanie"
+	},
+	"readAloud_scope_paragraph": {
+		"message": "Akapit"
+	},
+	"readAloud_scope_all": {
+		"message": "Cała strona"
 	}
 }
