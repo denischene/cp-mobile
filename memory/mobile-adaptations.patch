@@ -1,0 +1,391 @@
+diff --git a/package.json b/package.json
+index 7084d29a..73c06d6e 100644
+--- a/package.json
++++ b/package.json
+@@ -88,7 +88,11 @@
+ 		"preload:firefox": "npm run mv:manifest:firefox",
+ 		"load:firefox": "cross-env-shell web-ext run --source-dir ./dist/extension --start-url=$npm_package_config_page --browser-console",
+ 		"preload:chrome": "npm run mv:manifest:chrome",
+-		"load:chrome": "cross-env-shell web-ext run --source-dir ./dist/extension --start-url=$npm_package_config_page --target chromium --devtools"
++		"load:chrome": "cross-env-shell web-ext run --source-dir ./dist/extension --start-url=$npm_package_config_page --target chromium --devtools",
++		"build:android": "npm run build && npm run zip:android",
++		"zip:android": "npm run mv:manifest:firefox && web-ext build -s dist/extension -a ./ -n orange-confort-plus-$npm_package_version-android.xpi --overwrite-dest",
++		"run:android": "npm run mv:manifest:firefox && web-ext run -t firefox-android --firefox-apk org.mozilla.fenix --source-dir ./dist/extension",
++		"sign:android": "npm run mv:manifest:firefox && web-ext sign -s dist/extension --channel=unlisted"
+ 	},
+ 	"devDependencies": {
+ 		"@types/chrome": "^0.0.270",
+diff --git a/src/extension/manifest.firefox.json b/src/extension/manifest.firefox.json
+index 96640b00..f43790f2 100644
+--- a/src/extension/manifest.firefox.json
++++ b/src/extension/manifest.firefox.json
+@@ -11,6 +11,9 @@
+ 		"gecko": {
+ 			"id": "@orange_confort_plus",
+ 			"strict_min_version": "109.0"
++		},
++		"gecko_android": {
++			"strict_min_version": "120.0"
+ 		}
+ 	},
+ 	"background": {
+diff --git a/src/extension/scripts/main.ts b/src/extension/scripts/main.ts
+index 31c16097..dfe0a51e 100644
+--- a/src/extension/scripts/main.ts
++++ b/src/extension/scripts/main.ts
+@@ -1,153 +1,178 @@
+ // @ts-ignore
+ const PREFIX = 'cplus-';
+ 
++// Internal browser pages where the extension must stay disabled
++// @ts-ignore
++const INTERNAL_PAGES = ['edge:', 'chrome:', 'about:', 'moz-extension:', 'resource:'];
++
++// @ts-ignore
++const isInternalPage = (url?: string): boolean => INTERNAL_PAGES.some(scheme => url?.startsWith(scheme));
++
++// On Firefox for Android some per-tab action methods (setIcon, enable, disable)
++// are not implemented and throw. We wrap them so a failure never breaks the
++// core "click to inject the toolbar" flow.
++// @ts-ignore
++const safeAction = (method: string, ...args: any[]): void => {
++        try {
++                const action: any = (chrome as any).action;
++                if (action && typeof action[method] === 'function') {
++                        const result = action[method](...args);
++                        if (result && typeof result.catch === 'function') {
++                                result.catch(() => { /* unsupported on this platform */ });
++                        }
++                }
++        } catch (error) {
++                // Silently ignore: action UI customisation is best-effort on mobile
++        }
++};
++
+ chrome.runtime.onInstalled.addListener(async () => {
+-	// Update action icon and state
+-	const tabs = await chrome.tabs.query({ currentWindow: true });
+-	for (const tab of tabs) {
+-		// Set Confort+ disable by default
+-		updateButtonIcon(false, tab.id as number);
+-		// Disable action on internal browser pages
+-		if (['edge:', 'chrome:', 'about:'].some(browser => tab.url?.startsWith(browser))) {
+-			chrome.action.disable(tab.id);
+-		} else {
+-			chrome.action.enable(tab.id);
+-			const states = await chrome.storage.local.get(`${PREFIX}is-enabled-${tab.id}`);
+-			chrome.storage.local.set({ [`${PREFIX}is-enabled-${tab.id}`]: false });
+-			// Reload tabs that had Confort+ loaded and active
+-			if (states[`${PREFIX}is-enabled-${tab.id}`]) {
+-				chrome.tabs.reload(tab.id as number)
+-					.catch(error => {
+-						console.error(`Cannot reload tab ${tab.id}. Error: ${error}`)
+-					});
+-			}
+-		}
+-	}
++        // Update action icon and state
++        const tabs = await chrome.tabs.query({ currentWindow: true });
++        for (const tab of tabs) {
++                // Set Confort+ disable by default
++                updateButtonIcon(false, tab.id as number);
++                // Disable action on internal browser pages
++                if (isInternalPage(tab.url)) {
++                        safeAction('disable', tab.id);
++                } else {
++                        safeAction('enable', tab.id);
++                        const states = await chrome.storage.local.get(`${PREFIX}is-enabled-${tab.id}`);
++                        chrome.storage.local.set({ [`${PREFIX}is-enabled-${tab.id}`]: false });
++                        // Reload tabs that had Confort+ loaded and active
++                        if (states[`${PREFIX}is-enabled-${tab.id}`]) {
++                                chrome.tabs.reload(tab.id as number)
++                                        .catch(error => {
++                                                console.error(`Cannot reload tab ${tab.id}. Error: ${error}`)
++                                        });
++                        }
++                }
++        }
+ });
+ 
+ // Update Confort+ button icon
+ // @ts-ignore
+ const updateButtonIcon = (isEnabled: boolean, tabId: number) => {
+-	if (isEnabled) {
+-		chrome.action.setIcon({
+-			tabId: tabId,
+-			path: {
+-				"16": "../assets/img/icon-16.png",
+-				"19": "../assets/img/icon-19.png",
+-				"32": "../assets/img/icon-32.png",
+-				"38": "../assets/img/icon-38.png",
+-				"48": "../assets/img/icon-48.png",
+-				"64": "../assets/img/icon-64.png",
+-				"128": "../assets/img/icon-128.png"
+-			}
+-		});
+-	} else {
+-		chrome.action.setIcon({
+-			tabId: tabId,
+-			path: {
+-				"16": "../assets/img/icon-disabled-16.png",
+-				"19": "../assets/img/icon-disabled-19.png",
+-				"32": "../assets/img/icon-disabled-32.png",
+-				"38": "../assets/img/icon-disabled-38.png",
+-				"48": "../assets/img/icon-disabled-48.png",
+-				"64": "../assets/img/icon-disabled-64.png",
+-				"128": "../assets/img/icon-disabled-128.png"
+-			}
+-		});
+-	}
++        if (isEnabled) {
++                safeAction('setIcon', {
++                        tabId: tabId,
++                        path: {
++                                "16": "../assets/img/icon-16.png",
++                                "19": "../assets/img/icon-19.png",
++                                "32": "../assets/img/icon-32.png",
++                                "38": "../assets/img/icon-38.png",
++                                "48": "../assets/img/icon-48.png",
++                                "64": "../assets/img/icon-64.png",
++                                "128": "../assets/img/icon-128.png"
++                        }
++                });
++        } else {
++                safeAction('setIcon', {
++                        tabId: tabId,
++                        path: {
++                                "16": "../assets/img/icon-disabled-16.png",
++                                "19": "../assets/img/icon-disabled-19.png",
++                                "32": "../assets/img/icon-disabled-32.png",
++                                "38": "../assets/img/icon-disabled-38.png",
++                                "48": "../assets/img/icon-disabled-48.png",
++                                "64": "../assets/img/icon-disabled-64.png",
++                                "128": "../assets/img/icon-disabled-128.png"
++                        }
++                });
++        }
+ }
+ 
+ // Confort+ button click event
+ chrome.action.onClicked.addListener(async (tab) => {
+-	// Just in case we're on internal browser page and action couldn't be disabled before
+-	if (['edge:', 'chrome:', 'about:'].some(browser => tab.url?.startsWith(browser))) {
+-		chrome.action.disable(tab.id);
+-		return false;
+-	}
+-
+-	const activations = await chrome.storage.local.get(`${PREFIX}is-enabled-${tab.id}`);
+-	const isEnabled = activations[`${PREFIX}is-enabled-${tab.id}`];
+-	chrome.storage.local.set({ [`${PREFIX}is-enabled-${tab.id}`]: !isEnabled });
+-
+-	const injections = await chrome.storage.local.get(`${PREFIX}is-injected-${tab.id}`);
+-	const isInjected = injections[`${PREFIX}is-injected-${tab.id}`];
+-
+-	updateButtonIcon(!isEnabled, tab.id as number);
+-
+-	if (!isInjected) {
+-		chrome.scripting.executeScript({
+-			target: { tabId: tab.id as number },
+-			files: ['js/toolbar.js']
+-		});
+-		chrome.storage.local.set({ [`${PREFIX}is-injected-${tab.id}`]: true });
+-	} else if (!isEnabled && isInjected) {
+-		chrome.scripting.executeScript({
+-			target: { tabId: tab.id as number },
+-			files: ['js/restore.js']
+-		});
+-	} else if (isEnabled && isInjected) {
+-		chrome.scripting.executeScript({
+-			target: { tabId: tab.id as number },
+-			files: ['js/eject.js']
+-		});
+-	}
++        // Just in case we're on internal browser page and action couldn't be disabled before
++        if (isInternalPage(tab.url)) {
++                safeAction('disable', tab.id);
++                return false;
++        }
++
++        const activations = await chrome.storage.local.get(`${PREFIX}is-enabled-${tab.id}`);
++        const isEnabled = activations[`${PREFIX}is-enabled-${tab.id}`];
++        chrome.storage.local.set({ [`${PREFIX}is-enabled-${tab.id}`]: !isEnabled });
++
++        const injections = await chrome.storage.local.get(`${PREFIX}is-injected-${tab.id}`);
++        const isInjected = injections[`${PREFIX}is-injected-${tab.id}`];
++
++        updateButtonIcon(!isEnabled, tab.id as number);
++
++        if (!isInjected) {
++                chrome.scripting.executeScript({
++                        target: { tabId: tab.id as number },
++                        files: ['js/toolbar.js']
++                });
++                chrome.storage.local.set({ [`${PREFIX}is-injected-${tab.id}`]: true });
++        } else if (!isEnabled && isInjected) {
++                chrome.scripting.executeScript({
++                        target: { tabId: tab.id as number },
++                        files: ['js/restore.js']
++                });
++        } else if (isEnabled && isInjected) {
++                chrome.scripting.executeScript({
++                        target: { tabId: tab.id as number },
++                        files: ['js/eject.js']
++                });
++        }
+ });
+ 
+ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+-	if (request.getTabId) {
+-		sendResponse({ tabId: sender.tab.id });
+-	}
++        if (request.getTabId) {
++                sendResponse({ tabId: sender.tab.id });
++        }
+ });
+ 
+ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+-	if (['edge:', 'chrome:', 'about:'].some(browser => tab.url?.startsWith(browser))) {
+-		chrome.action.disable(tabId);
+-		updateButtonIcon(false, tabId);
+-	} else {
+-		chrome.action.enable(tabId);
+-
+-		const activations = await chrome.storage.local.get(`${PREFIX}is-enabled-${tabId}`);
+-		const isEnabled = activations[`${PREFIX}is-enabled-${tabId}`];
+-
+-		const reloads = await chrome.storage.local.get(`${PREFIX}is-reloaded-${tab.id}`);
+-		const isReload = reloads[`${PREFIX}is-reloaded-${tab.id}`];
+-
+-		if (changeInfo.url || isReload) {
+-			if (isEnabled) {
+-				chrome.scripting.executeScript({
+-					target: { tabId: tabId },
+-					files: ['js/toolbar.js']
+-				});
+-				chrome.storage.local.set({ [`${PREFIX}is-reloaded-${tabId}`]: false });
+-			}
+-			chrome.storage.local.set({ [`${PREFIX}is-injected-${tabId}`]: isEnabled });
+-		}
+-
+-		updateButtonIcon(isEnabled, tabId);
+-	}
++        if (isInternalPage(tab.url)) {
++                safeAction('disable', tabId);
++                updateButtonIcon(false, tabId);
++        } else {
++                safeAction('enable', tabId);
++
++                const activations = await chrome.storage.local.get(`${PREFIX}is-enabled-${tabId}`);
++                const isEnabled = activations[`${PREFIX}is-enabled-${tabId}`];
++
++                const reloads = await chrome.storage.local.get(`${PREFIX}is-reloaded-${tab.id}`);
++                const isReload = reloads[`${PREFIX}is-reloaded-${tab.id}`];
++
++                if (changeInfo.url || isReload) {
++                        if (isEnabled) {
++                                chrome.scripting.executeScript({
++                                        target: { tabId: tabId },
++                                        files: ['js/toolbar.js']
++                                });
++                                chrome.storage.local.set({ [`${PREFIX}is-reloaded-${tabId}`]: false });
++                        }
++                        chrome.storage.local.set({ [`${PREFIX}is-injected-${tabId}`]: isEnabled });
++                }
++
++                updateButtonIcon(isEnabled, tabId);
++        }
+ });
+ 
+ chrome.webNavigation.onCommitted.addListener((details) => {
+-	if (details.transitionType === 'reload') {
+-		chrome.storage.local.set({ [`${PREFIX}is-reloaded-${details.tabId}`]: true });
+-	}
++        if (details.transitionType === 'reload') {
++                chrome.storage.local.set({ [`${PREFIX}is-reloaded-${details.tabId}`]: true });
++        }
+ });
+ 
+ chrome.tabs.onCreated.addListener(tab => {
+-	updateButtonIcon(false, tab.id as number);
+-	chrome.action.disable(tab.id);
+-	if (!['edge:', 'chrome:', 'about:'].some(browser => tab.url?.startsWith(browser))) {
+-		chrome.action.enable(tab.id);
+-	}
++        updateButtonIcon(false, tab.id as number);
++        safeAction('disable', tab.id);
++        if (!isInternalPage(tab.url)) {
++                safeAction('enable', tab.id);
++        }
+ });
+ 
+ // @note Debugging storage
+ // @see https://developer.chrome.com/docs/extensions/reference/storage/#synchronous-response-to-storage-updates
+ chrome.storage.onChanged.addListener((changes, namespace) => {
+-	for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
+-		console.info(
+-			`Storage key "${key}" in namespace "${namespace}" changed.`,
+-			`Old value was "${oldValue}", new value is "${newValue}".`
+-		);
+-	}
++        for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
++                console.info(
++                        `Storage key "${key}" in namespace "${namespace}" changed.`,
++                        `Old value was "${oldValue}", new value is "${newValue}".`
++                );
++        }
+ });
+diff --git a/src/styles/06-components/toolbar.scss b/src/styles/06-components/toolbar.scss
+index ade00dd9..e79df8ce 100644
+--- a/src/styles/06-components/toolbar.scss
++++ b/src/styles/06-components/toolbar.scss
+@@ -1,18 +1,35 @@
+ #cplus-toolbar {
+-	box-shadow: rgb(156, 156, 156) 0 0 8px 2px;
+-	display: grid;
+-	grid-template-rows: auto 1fr;
+-	width: 24em;
+-	max-height: 100vh;
+-	overflow: auto;
+-	transition:
+-		transform .3s ease-in-out,
+-		visibility .3s ease-in-out;
+-	will-change: transform, visibility;
+-	z-index: calc(infinity);
++        box-shadow: rgb(156, 156, 156) 0 0 8px 2px;
++        display: grid;
++        grid-template-rows: auto 1fr;
++        width: 24em;
++        /* Never overflow narrow mobile viewports */
++        max-width: 100vw;
++        max-height: 100vh;
++        /* Use dynamic viewport height so the mobile browser toolbars
++           don't hide the bottom of the palette */
++        max-height: 100dvh;
++        overflow: auto;
++        transition:
++                transform .3s ease-in-out,
++                visibility .3s ease-in-out;
++        will-change: transform, visibility;
++        z-index: calc(infinity);
+ 
+-	&.close {
+-		transform: translateX(100%);
+-		visibility: hidden;
+-	}
++        &.close {
++                transform: translateX(100%);
++                visibility: hidden;
++        }
++}
++
++/* Mobile / small screens (phones): the palette becomes a full-width panel
++   so every control (usage modes, multi-click buttons, settings) stays
++   reachable and comfortably sized. Desktop keeps its 24em side panel. */
++@media (max-width: 36em) {
++        #cplus-toolbar {
++                width: 100vw;
++                max-width: 100vw;
++                /* Respect device notches / rounded corners */
++                padding-bottom: env(safe-area-inset-bottom, 0);
++        }
+ }

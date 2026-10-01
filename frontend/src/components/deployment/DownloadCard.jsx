@@ -3,7 +3,8 @@ import { QRCodeSVG } from "qrcode.react";
 import { DEPLOYMENT } from "@/constants/testIds";
 import { InstallSteps } from "@/components/deployment/InstallSteps";
 
-const XPI_PATH = "/downloads/orange-confort-plus-5.5.1-android.xpi";
+const BASE = process.env.PUBLIC_URL || "";
+const XPI_PATH = `${BASE}/downloads/orange-confort-plus-6.0.0-alpha.1-android.xpi`;
 
 export const DownloadCard = () => {
   const xpiUrl = `${window.location.origin}${XPI_PATH}`;
@@ -30,10 +31,10 @@ export const DownloadCard = () => {
               </div>
               <div>
                 <p className="font-semibold text-confort-ink dark:text-white m-0">
-                  orange-confort-plus-5.5.1-android.xpi
+                  orange-confort-plus-6.0.0-alpha.1-android.xpi
                 </p>
                 <p className="text-sm text-confort-ink/60 dark:text-white/70 m-0">
-                  Version 5.5.1 · ~1,5 Mo · non signée
+                  Version 6.0.0-alpha.1 · ~1,6 Mo · non signée
                 </p>
               </div>
             </div>
@@ -80,7 +81,7 @@ export const DownloadCard = () => {
 
           <div className="mt-6 flex flex-wrap gap-4 border-t border-black/10 dark:border-white/10 pt-5 dark:bg-confort-ink">
             <a
-              href="/downloads/ANDROID_FIREFOX.md"
+              href={`${BASE}/downloads/ANDROID_FIREFOX.md`}
               target="_blank"
               rel="noopener noreferrer"
               data-testid={DEPLOYMENT.downloadGuideLink}

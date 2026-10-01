@@ -4,7 +4,7 @@ import DeploymentPage from "@/pages/DeploymentPage";
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
+      <BrowserRouter basename={process.env.PUBLIC_URL || "/"}>
         <Routes>
           <Route path="/" element={<DeploymentPage />}>
             <Route index element={<DeploymentPage />} />

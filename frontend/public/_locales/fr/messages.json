@@ -302,13 +302,13 @@
 		"message": "Pour sortir d’une fenêtre ou arrêter une fonction"
 	},
 	"word": {
-		"message": "Lire le mot"
+		"message": "le mot pointé"
 	},
 	"sentence": {
-		"message": "Lire la phrase"
+		"message": "la phrase pointée"
 	},
 	"paragraph": {
-		"message": "Lire le paragraphe"
+		"message": "le paragraphe pointé"
 	},
 	"delay1": {
 		"message": "délai de 1s"
@@ -559,7 +559,7 @@
 		"message": "Aspect de la souris"
 	},
 	"setting_cursorAspect_instruction": {
-		"message": "Pour modifier l’apparence des pointeurs."
+		"message": "Pour modifier le rendu des curseurs."
 	},
 	"cursorAspect_empty_example": {
 		"message": "Souris par défaut"
@@ -871,7 +871,7 @@
 		"message": "Pour faciliter la navigation dans la page"
 	},
 	"navigationButtons_noModifications": {
-		"message": "sans bouton de navigation"
+		"message": "sans boutons de navigation"
 	},
 	"navigationButtonsNone": {
 		"message": "sans bouton de navigation"
@@ -1033,7 +1033,132 @@
 	"zoom_500": {
 		"message": "max, 500%"
 	},
-	"newCustomValueAdded": {
-		"message": "Nouvelle valeur ajoutée :"
+	"newValueAddedTooltip": {
+		"message": "Nouvelle valeur ajoutée"
+	},
+	"setting_colorRead": {
+		"message": "Lire en couleurs"
+	},
+	"setting_colorRead_instruction": {
+		"message": "Pour faciliter la lecture des syllabes et des sons."
+	},
+	"colorRead_noModifications": {
+		"message": "sans modification"
+	},
+	"colorRead_active": {
+		"message": "activé"
+	},
+	"colorRead_splitSyllables": {
+		"message": "Syllabes séparées"
+	},
+	"colorRead_colorSyllables": {
+		"message": "Syllabes colorées"
+	},
+	"colorRead_darkBgColor": {
+		"message": "Colorer (fond foncé)"
+	},
+	"colorRead_lightBgColor": {
+		"message": "Colorer (fond clair)"
+	},
+	"colorRead_colorHoveredWord": {
+		"message": "Colorer le mot pointé"
+	},
+	"colorRead_colorHoveredSentence": {
+		"message": "Colorer la phrase pointée"
+	},
+	"colorRead_colorParagraph": {
+		"message": "Colorer le paragraphe"
+	},
+	"colorRead_colorAll": {
+		"message": "Colorer tout"
+	},
+	"all": {
+		"message": "tout le texte"
+	},
+	"splitSyllables": {
+		"message": "Syllabes séparées"
+	},
+	"colorSyllables": {
+		"message": "Syllabes colorées"
+	},
+	"colorRead_none": {
+		"message": "sans colorer"
+	},
+	"colorRead_values": {
+		"message": "$ACTION$ pour $SCOPE$",
+		"placeholders": {
+			"action": {
+				"content": "$1"
+			},
+			"scope": {
+				"content": "$2"
+			}
+		}
+	},
+	"colorReadAction_darkBgColor": {
+		"message": "Colorer (fond foncé)"
+	},
+	"colorReadAction_lightBgColor": {
+		"message": "Colorer (fond clair)"
+	},
+	"colorReadAction_label": {
+		"message": "Action"
+	},
+	"colorReadAction_none": {
+		"message": "sans colorer"
+	},
+	"colorReadAction_splitSyllables": {
+		"message": "Syllabes séparées"
+	},
+	"colorReadAction_colorSyllables": {
+		"message": "Syllabes colorées"
+	},
+	"colorPicker_label": {
+		"message": "Associer une couleur à $PHONEME$",
+		"placeholders": {
+			"phoneme": {
+				"content": "$1"
+			}
+		}
+	},
+	"colorPicker_back": {
+		"message": "Retour"
+	},
+	"colorPicker_swatch": {
+		"message": "Couleur $COLOR$",
+		"placeholders": {
+			"color": {
+				"content": "$1"
+			}
+		}
+	},
+	"colorProfileRule_editColor": {
+		"message": "Modifier la couleur du phonème $PHONEME$",
+		"placeholders": {
+			"phoneme": {
+				"content": "$1"
+			}
+		}
+	},
+	"colorReadScope_label": {
+		"message": "Effet sur"
+	},
+	"colorReadScope_word": {
+		"message": "le mot pointé"
+	},
+	"colorReadScope_sentence": {
+		"message": "la phrase pointée"
+	},
+	"colorReadScope_paragraph": {
+		"message": "le paragraphe pointé"
+	},
+	"colorReadScope_all": {
+		"message": "tout le texte"
+	},
+	"darkBgColor": {
+		"message": "Colorer (fond foncé)"
+	},
+	"lightBgColor": {
+		"message": "Colorer (fond clair)"
 	}
 }

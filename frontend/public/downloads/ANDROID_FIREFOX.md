@@ -30,16 +30,16 @@ Pré-requis : Node.js ≥ 18, puis `npm install` une fois.
 
 ```shell
 # Génère dist/extension avec le manifeste Firefox + produit le .xpi Android
-npm run build:android
+npm run package:android
 ```
 
 Le fichier produit :
 
 ```
-orange-confort-plus-5.5.1-android.xpi
+orange-confort-plus-6.0.0-alpha.1-android.xpi
 ```
 
-> `npm run build:android` = build complet + `zip:android`.
+> `npm run package:android` = build complet + `zip:android`.
 > Si `dist/extension` est déjà construit, `npm run zip:android` suffit.
 
 Vérification de conformité (0 erreur / 0 avertissement, y compris Android) :
