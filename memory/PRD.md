@@ -139,3 +139,21 @@ grande tuile → aucun agrandissement (largeur inchangée), petit lien → +4 px
 (contre +44 px avant) et +37 px en hauteur, reset complet des classes ; modes-of-use servi en 1.0.48
 avec toutes les nouvelles valeurs. Aucune erreur console. Le durcissement Chrome (service worker)
 n'est pas testable en preview : à valider par l'utilisateur sur Le Monde.
+
+## Journal (01/06/2026 — « contrastes renforcés » étendus / AMO reporté)
+- `color-contrast.service.ts` : « Contrastes renforcés » s'applique maintenant à TOUTE couleur de texte
+  dont le ratio WCAG < 4.5 avec son fond réel :
+  * texte achromatique (saturation < 0.12) → #000 sur fond clair, #fff sur fond foncé
+  * texte coloré → la teinte et la saturation sont conservées, seule la luminosité est assombrie /
+    éclaircie par paliers de 5 % jusqu'à atteindre 4.5:1 (repli #000/#fff si impossible)
+  * les fonds de page ne sont jamais modifiés
+  * `MutationObserver` (debounce 500 ms) pour les textes chargés dynamiquement (scroll infini, SPA)
+  * marquage `data-cplus-contrast` : chaque élément n'est calculé qu'une fois (coût maîtrisé),
+    attributs et couleurs inline intégralement restaurés au changement de valeur
+- Vérifié (Playwright) : #bbb → noir, #ffa726 → rgb(165,98,0) (teinte conservée), bleu suffisant inchangé,
+  gris foncé sur #111 → blanc, fond de page inchangé, texte ajouté après activation corrigé en < 1 s,
+  restauration complète et 0 marqueur résiduel. Aucune erreur console.
+- Signature AMO : **reportée à la demande de l'utilisateur**, l'ID `@orange_confort_plus` est conservé.
+  Rappel pour plus tard : il faudra un ID propre (ex. confort-plus-mobile@oakcess.fr), des identifiants
+  API AMO (JWT issuer + secret) et `npm run sign:android` (web-ext sign --channel=unlisted) ;
+  AMO refusera de signer sous l'ID d'Orange.

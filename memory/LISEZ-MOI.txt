@@ -1,0 +1,38 @@
+Confort+ Mobile — site statique
+================================
+
+Contenu : build statique prêt à déposer dans le sous-dossier /cpm de cpm.oakcess.fr
+URL cible : https://cpm.oakcess.fr/cpm/
+
+INSTALLATION
+1. Décompressez l'archive.
+2. Copiez TOUT le contenu (y compris le fichier caché .htaccess) dans le dossier /cpm
+   à la racine web du domaine : /var/www/.../cpm/
+3. Vérifiez https://cpm.oakcess.fr/cpm/
+
+IMPORTANT : le site est compilé pour le chemin /cpm/. S'il doit être servi à la
+racine du domaine ou dans un autre dossier, il faut le recompiler avec
+PUBLIC_URL=<chemin>.
+
+CONTENU
+- index.html, static/      : application React (page de déploiement)
+- downloads/               : orange-confort-plus-6.0.0-alpha.1-android.xpi + guide
+- js/, css/, assets/, _locales/, COPYING.txt : Confort+ « version serveur »
+  (widget injecté directement dans la page)
+- .htaccess                : Apache — types MIME (.xpi) + routage SPA
+
+SERVEUR APACHE
+Le .htaccess fourni suffit (mod_rewrite + mod_mime activés).
+
+SERVEUR NGINX
+Ajoutez dans le bloc server :
+
+    location /cpm/ {
+        alias /chemin/vers/cpm/;
+        try_files $uri $uri/ /cpm/index.html;
+    }
+    types { application/x-xpinstall xpi; }
+
+NOTE : le fichier .xpi n'est pas signé par Mozilla. Il s'installe uniquement sur
+Firefox Nightly Android avec xpinstall.signatures.required = false (voir le guide
+downloads/ANDROID_FIREFOX.md).
