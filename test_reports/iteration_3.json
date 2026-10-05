@@ -1,0 +1,42 @@
+{
+  "summary": "Frontend-only re-test of Confort+ mobile (https://mobile-confort-build.preview.emergentagent.com/) after the main agent's fixes for the user-reported crash and the implementation of the new read-aloud rules. ALL REGRESSION TESTS PASS. The crash is fully resolved: 20 intensive navigation cycles (open palette → tap every header & body button including the back button on the home page, close, re-open) produce 0 pageerror and localStorage.cplus-current-route always contains valid JSON (observed value: '\"modes\"'); after a hard reload the palette is still present and no error is thrown. The self-healing path also works: manually writing the literal string 'undefined' into both cplus-current-route and cplus-modeOfUse followed by a reload produces 0 pageerror, the palette boots normally, the corrupted values are automatically replaced by valid JSON, and the dev-overlay 'Runtime error' modal no longer appears. The window.cplus dev hook is now correctly exposed (readAloud, colorContrast, clickFacilite, clearlyLinks, dragDrop, route, storage) which allowed deterministic verification of the read-aloud rules. 10/12 rules validate; 2 minor behaviours deviate (details below).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Rule — keyboard focus (Tab / element.focus()) must vocalize the focused element",
+        "issue": "Programmatically focusing a button or link (document.getElementById('solo-btn').focus()) in paragraph/sentence read-aloud mode does NOT push anything into speechSynthesis.speak and leaves readAloud.speakingElement === null. The 'tap/click' path works correctly, so the service is functional; only the focus→speak binding is missing or filtered out. Impact: Tab-key users on the real device will not hear the focused element. Suggest listening to 'focusin' (bubbling, works through shadow DOM boundary too) on the host document and routing to the same speakTarget pipeline used by pointerdown.",
+        "affected_selectors": ["#solo-btn", "#solo-link (via .focus())"]
+      },
+      {
+        "flow": "Rule 4 — Enter key on an actionable while it is being vocalized must activate it",
+        "issue": "After focusing a link (which — once the focus→speak path is fixed — would place the link in the speaking state), dispatching KeyboardEvent('keydown', {key:'Enter'}) on the link does not navigate (location.hash stays ''). The pointerdown→second-click path within 1 s works correctly (verified: 2nd click flips hash to '#solo-target'; after >1 s the click re-vocalizes and does NOT navigate — perfectly compliant). Only the Enter-key activation branch is missing. Suggest adding a keydown handler mirroring the pointerdown/click 1-second-window logic.",
+        "affected_selectors": ["KeyboardEvent key='Enter' on #solo-link"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Wire 'focusin' (and/or 'focus' events) to the read-aloud speakTarget pipeline so that Tab-navigation vocalizes the focused text/button/link/select (currently only pointer / click triggers it).",
+    "Add a 'keydown' handler for key==='Enter' on actionable elements that mirrors the existing 1-second-after-speech-end activation window used for pointer/click (Rule 4 for keyboard users)."
+  ],
+  "critical_code_review_comments": [
+    "Robustness FIX validated: the two-sided fix (writer-side guard against persisting the literal 'undefined' + reader-side safeJsonParse auto-cleaning of corrupted values + header prev-button guard when history is empty) completely closes the user-reported crash. 20 cycles + reload + corrupted-storage reload = 0 pageerror.",
+    "window.cplus dev hook is clean and sufficient for black-box verification of the service layer without touching the production surface — good design.",
+    "Rule 5 sentence-with-hyperlink implementation is well done: a single .cplus-read-aloud-span wraps the whole sentence, the <a> stays an <a> with its href intact, there is no nested span inside the link, and resetting back to 'noModifications' fully restores the DOM including the link's href.",
+    "Rule 2 image getInnerText covers the three branches correctly (alt, figcaption via <figure>, and a fallback 'no description' string).",
+    "Word scope does NOT alter textContent (bytes-identical before / during / after), so screen-readers / tests that read textContent are not affected — good.",
+    "ReinforcedContrasts leaves no residue: data-cplus-contrast count returns to 0 after noModifications; the body background is untouched during the transition.",
+    "Remaining minor gap: focus-based and Enter-key paths in the read-aloud rules are only partially wired (see integration_issues)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped per request)", "frontend": "crash fix 100% validated; read-aloud rules 10/12 PASS (focus + Enter paths need wiring)"},
+  "test_credentials": "none required",
+  "seed_data_creation": "Injected ad-hoc DOM nodes via page.evaluate (paragraphs with/without hyperlink, button, select, images with alt / inside figure / without any), plus a solo link + button + paragraph block, to probe the service surface deterministically. No persistent seed.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "CRASH FIX IS CONFIRMED FIXED — do not re-prioritize it. If main agent wires focus-event and Enter-key paths into read-aloud, verify by: (1) await page.evaluate(() => document.getElementById('X').focus()) must push into window.__spoken within ~400 ms when readAloud is active; (2) KeyboardEvent('keydown',{key:'Enter'}) on a currently-speaking actionable or within 1 s after lastSpeechEnd must change location.hash. Test rig: stub window.speechSynthesis.speak = u=>{window.__spoken.push(u.text); setTimeout(()=>u.onend&&u.onend({}),50);}; window.speechSynthesis.cancel = ()=>{}; then await window.cplus.readAloud.setReadAloud('paragraph') and wait ~800 ms.",
+  "rca of the issue": "Original crash (iteration 2) was caused by HomeComponent.attributeChangedCallback calling JSON.parse on the literal string 'undefined' persisted into localStorage['cplus-current-route'] by a back-navigation code path that lacked a guard when the route history was empty. Fix validated end-to-end: writer (route.service / local-storage.service) now refuses to persist non-JSON values, reader (safeJsonParse) silently cleans the entry if it is already corrupted on next read, and the header prev-button guards when history is empty so no 'undefined' route is ever broadcast. 20-cycle + reload + corrupt-storage reload scenarios all green."
+}
