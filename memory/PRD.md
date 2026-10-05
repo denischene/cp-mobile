@@ -157,3 +157,45 @@ n'est pas testable en preview : à valider par l'utilisateur sur Le Monde.
   Rappel pour plus tard : il faudra un ID propre (ex. confort-plus-mobile@oakcess.fr), des identifiants
   API AMO (JWT issuer + secret) et `npm run sign:android` (web-ext sign --channel=unlisted) ;
   AMO refusera de signer sous l'ID d'Orange.
+
+## Journal (05/06/2026 — règles de vocalisation revues + plantage des menus corrigé)
+### Plantage « la version mobile plante en naviguant dans ses menus » — CAUSE RACINE TROUVÉE ET CORRIGÉE
+- `shared/header.component.ts` : `prevButtonEvent()` diffusait `changeRoute` avec
+  `historyRoute[historyRoute.length - 1]` = **undefined** quand l'historique est vide (page d'accueil).
+  `RouteService.navigate(undefined)` supprimait alors la page courante sans en charger de nouvelle
+  (palette vide) puis `setCurrentRoute(undefined)` écrivait la chaîne `"undefined"` dans le stockage ;
+  au chargement suivant `JSON.parse("undefined")` levait une SyntaxError dans
+  `HomeComponent.attributeChangedCallback` → palette morte jusqu'à réinitialisation.
+- Correctifs : garde dans `prevButtonEvent()`, `RouteService.navigate()/setCurrentRoute()` ignorent
+  toute route inconnue, nouvelle fonction globale `safeJsonParse()` (constantes.core.ts) utilisée dans
+  toolbar/home/settings/modes/mode/abstract-category/abstract-setting/btn-setting/pause/color-profile-rule,
+  `toolbar.component` ne pousse plus de JSON `undefined`, et les deux `LocalStorageService`
+  (serveur + extension) refusent d'écrire `undefined` et auto-nettoient une valeur corrompue.
+- Hook de debug `window.cplus` ajouté (injector.core.ts) : readAloud, colorContrast, clickFacilite,
+  clearlyLinks, dragDrop, route, storage.
+
+### Vocalisation (read-aloud.service.ts) — nouvelles règles
+- Étendue « phrase » : regroupement des phrases AU-DELÀ des éléments inline (`groupSentences()`), donc
+  une phrase contenant des hyperliens est lue en entier ; l'unwrap conserve les liens (plus de
+  `resetToDefaultBody` destructif sur ces spans).
+- Un lien / bouton / select AUTONOME est lu seul (`spanHasTextOutsideActionables()`), un lien inline
+  dans une phrase fait lire la phrase entière.
+- Images : `getImageText()` → alt complet quelle que soit l'étendue, sinon `figcaption`, sinon
+  « absence de description » (clé i18n `readAloud_noDescription` fr/en/es/it/pl).
+- Machine à états `onActivationGesture()` : rien en cours → vocalise sans activer ; texte en cours →
+  clic gauche/droit, Échap, changement de focus = arrêt ; élément activable en cours (ou dans la
+  seconde qui suit la fin de sa lecture) → arrêt + activation réelle ; clic sur un autre texte →
+  arrêt + lecture du nouveau.
+- Clavier : `focusin` vocalise l'élément focusé (en ignorant le focus induit par le clic qu'on vient de
+  traiter sur le même élément), `Enter` suit la même logique que le clic.
+- Étendue « mot » : `createFragmentForWords()` réécrit — les espaces sont conservés tels quels
+  (plus d'espaces en double ni de texte altéré) et le texte est restauré à l'identique.
+- Traitement par lots asynchrones (`processInChunks`, 80 éléments) pour ne plus bloquer le thread
+  principal sur les grandes pages ; garde « même valeur » dans `setReadAloud` et
+  `setColorsContrasts('reinforcedContrasts')` pour éviter de reconstruire tout le DOM à chaque
+  navigation dans les menus.
+
+### Tests
+- `/app/test_reports/iteration_4.json` : **10/10 règles validées**, 0 erreur JS, plantage des menus
+  non reproductible (20 cycles + rechargement), auto-guérison d'un stockage corrompu validée.
+- Paquets régénérés : `.xpi` 6.0.0-alpha.1 + ZIP statique `/cpm`.

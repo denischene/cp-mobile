@@ -1,0 +1,31 @@
+{
+  "summary": "Frontend-only re-test of Confort+ mobile (https://mobile-confort-build.preview.emergentagent.com/) after the main agent wired focus-event and Enter-key paths into the read-aloud pipeline. ALL 10 rules from the review request now pass. The two previously-failing items from iteration_3 are FIXED: (a) element.focus() on a button / link / paragraph now vocalizes the focused element and interrupts the previous vocalization; (b) pressing Enter on an actionable element currently being vocalized (or within 1 s after the end of its vocalization) activates it (link follows href, button click handler fires). The sentence-scope Rule 5 is also validated end-to-end (whole sentence 'Please visit our documentation page for details.' is spoken even when the inline <a> is clicked, and the link is NOT followed).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "resolveSpeakTarget / spanHasTextOutsideActionables correctly isolates an autonomous actionable: a solo <a> in its own container is vocalized with only its own label ('Solo link label'), not with the surrounding paragraph text.",
+    "Rule 5 (sentence scope with hyperlink) is correct: a click on an inline <a> inside a sentence vocalizes the FULL sentence (text + link label concatenated) and the link's default navigation is suppressed (hash stays empty).",
+    "Rule 1 keyboard focus path is now wired: a direct element.focus() on either a <button> or an <a> pushes the element's label into speechSynthesis.speak within <400 ms. Switching focus to a second actionable interrupts the first vocalization (only the new text ends up spoken).",
+    "Rule 4 Enter-key activation is now wired end-to-end: real Enter keydown (via browser keyboard, not synthetic KeyboardEvent dispatch) within the 1 s window after a focus-induced vocalization activates the element (link.href navigation + button click handler both fire).",
+    "No double-vocalization: a single click on a focusable button triggers exactly one vocalization — the focus-induced vocalization is correctly suppressed when it is caused by the same click that just vocalized the element (per the new 'ignore focus only when it follows the same click' guard in createHandler case 'focusin').",
+    "Rule 3 interruption family still green: click-on-same-text stops, click-on-different-text stops+starts new, Escape stops, right-click (contextmenu) stops.",
+    "Rule 4 mouse family still green: 2nd click within 1 s activates (hash flips to '#solo-target'); after 1 s the click re-vocalizes without activating (hash stays empty).",
+    "Rule 2 image getInnerText: alt wins first ('Big red balloon over Paris'), figcaption wins when alt is absent ('Figure caption text'), 'no description' fallback when neither.",
+    "Word scope: p.textContent is byte-identical before / during / after, 7 spans produced for 7 words, cleanly removed on return to 'noModifications'.",
+    "Crash non-regression confirmed again: 20 intensive navigation cycles (open palette → every header & body button → close) produce 0 window.onerror hits; localStorage.cplus-current-route holds a valid JSON value ('\"modes\"') both after the cycles and after a hard reload."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped per request)", "frontend": "12/12 PASS (crash fix + 10 read-aloud rules + focus & Enter paths)"},
+  "test_credentials": "none required",
+  "seed_data_creation": "Injected ephemeral DOM nodes via page.evaluate (plain paragraph, paragraph with inline <a>, autonomous <a>, autonomous <button>, three <img> variants: alt / inside <figure> with <figcaption> / bare). No persistent seed.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "GOTCHA for future testers: synthetic KeyboardEvent('keydown',{key:'Enter'}) dispatched via element.dispatchEvent DOES NOT trigger the browser's default action for <a>/<button> (no navigation, no click). To verify Rule 4 Enter-key activation, you MUST use page.keyboard.press('Enter') after page.focus(selector) — this is what Firefox Nightly Android would actually do. All other rules can still be driven via dispatchEvent/pointerdown. speechSynthesis stub pattern that works: window.speechSynthesis.speak = u => { window.__spoken.push(u.text); setTimeout(()=>u.onend&&u.onend({}),50); }; window.speechSynthesis.cancel = ()=>{}. Then await window.cplus.readAloud.setReadAloud('paragraph'|'sentence'|'word'|'noModifications') and wait ~800 ms before probing. All five service instances are exposed on window.cplus = { readAloud, colorContrast, clickFacilite, clearlyLinks, dragDrop, route, storage }.",
+  "rca of the issue": "Previous gaps (iteration_3) are closed. (a) createHandler case 'focusin' used to drop every focus event; the new guard only drops focus events that follow the exact same pointer click that already triggered a vocalization on the same element — this preserves no-double-vocalization while re-enabling Tab-key / programmatic focus vocalization. (b) createHandler case 'keydown' now intercepts Enter on an actionable and routes to onActivationGesture, which reuses the pointer/click 1-second-window logic, so keyboard users get the same activation behaviour as mouse users."
+}
