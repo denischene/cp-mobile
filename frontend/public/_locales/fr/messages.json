@@ -1172,5 +1172,8 @@
 	},
 	"readAloud_scope_all": {
 		"message": "Toute la page"
+	},
+	"readAloud_noDescription": {
+		"message": "absence de description"
 	}
 }

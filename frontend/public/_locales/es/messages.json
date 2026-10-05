@@ -1190,5 +1190,8 @@
 	},
 	"readAloud_scope_all": {
 		"message": "Toda la página"
+	},
+	"readAloud_noDescription": {
+		"message": "sin descripción"
 	}
 }

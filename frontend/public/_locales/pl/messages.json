@@ -1187,5 +1187,8 @@
 	},
 	"readAloud_scope_all": {
 		"message": "Cała strona"
+	},
+	"readAloud_noDescription": {
+		"message": "brak opisu"
 	}
 }
