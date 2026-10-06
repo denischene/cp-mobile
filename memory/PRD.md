@@ -199,3 +199,29 @@ n'est pas testable en preview : à valider par l'utilisateur sur Le Monde.
 - `/app/test_reports/iteration_4.json` : **10/10 règles validées**, 0 erreur JS, plantage des menus
   non reproductible (20 cycles + rechargement), auto-guérison d'un stockage corrompu validée.
 - Paquets régénérés : `.xpi` 6.0.0-alpha.1 + ZIP statique `/cpm`.
+
+## Journal (06/06/2026 — palette non impactée / accordéons / liens adaptatifs)
+1. **La palette n'est plus impactée par la vocalisation** (`read-aloud.service.ts`) :
+   - le handler `click` ignore désormais tout événement provenant de la palette (`isInsideApp`),
+     ce qui corrigeait le « il faut cliquer deux fois sur les boutons multiclics » ;
+   - `blockActivation()` purge automatiquement son drapeau au bout de 500 ms (sur mobile,
+     `preventDefault` sur `pointerdown` peut supprimer le `click`, le drapeau restait armé et
+     mangeait le clic suivant — y compris celui de la palette).
+2. **Titres-accordéons** (Wikipédia mobile par ex.) : la fenêtre d'activation d'1 s s'applique
+   maintenant à TOUT élément vocalisé (`lastSpokenTarget`) et plus seulement aux éléments
+   « activables » détectables ; `giveFocus()` donne le focus à l'élément vocalisé lorsqu'il est
+   potentiellement interactif (`[aria-expanded]`, `[aria-controls]`, `[onclick]`, rôles, etc.) en
+   ajoutant si besoin un `tabindex="-1"` temporaire (nettoyé au retour à « sans vocalisation » via
+   `[data-cplus-tabindex]`) ; `resolveSpeakTarget()` reconnaît un élément dont le texte a été
+   encapsulé dans des spans (il n'avait plus de texte propre, donc rien n'était vocalisé).
+   Résultat : 1er tap = vocalisation + focus sans bascule, 2e tap dans la seconde = bascule de
+   l'accordéon, tap au-delà d'1 s = nouvelle vocalisation.
+3. **Couleurs de liens adaptatives** (`color-contrast.service.ts`) : en « Contrastes renforcés »,
+   chaque `a[href]` reçoit la classe `cplus-link-on-light` (darkblue / orange / brown) ou
+   `cplus-link-on-dark` (lightblue / #ffb366 / burlywood) selon la luminance de SON fond réel, via la
+   feuille `adaptive-links` ; un bandeau sombre dans une page claire (et inversement) est donc géré.
+   Les liens ne sont plus repeints par le renforcement de contraste (ils gardent une couleur de lien).
+   Classes et feuille retirées au retour à « sans modification ».
+
+Tests : `/app/test_reports/iteration_5.json` — 7/7 scénarios OK, 0 erreur JS, non-régressions
+vocalisation (itération 4) et plantage des menus confirmées. Paquets régénérés (.xpi + ZIP /cpm).
