@@ -1,0 +1,10 @@
+() => {
+ function parse(c){const m=c.match(/[\d.]+/g);return m?m.slice(0,3).map(Number):null}
+ function lum(r){const a=r.map(v=>{v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4)});return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2]}
+ function ratio(a,b){const l1=lum(a),l2=lum(b);return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05)}
+ function bg(el){while(el&&el.nodeType===1){const c=getComputedStyle(el).backgroundColor;const m=c.match(/[\d.]+/g);if(m&&(m.length<4||+m[3]>0.5))return parse(c);el=el.parentElement}return [255,255,255]}
+ const out=[];document.querySelectorAll('a[href]').forEach(a=>{if(a.closest('cplus-app-root'))return;const r=a.getBoundingClientRect();if(!r.width)return;const c=parse(getComputedStyle(a).color);const b=bg(a);out.push({id:a.id,txt:a.textContent.trim().slice(0,18),cls:a.className.replace(/.*?(cplus-link-on-\w+).*/,'$1'),color:getComputedStyle(a).color,bg:b.join(','),ratio:+ratio(c,b).toFixed(2)})});
+ const st=[...document.querySelectorAll('style')].find(s=>s.id&&s.id.includes('adaptive'));
+ const bad=out.filter(o=>o.ratio<4.5);
+ return {n:out.length,min:Math.min(...out.map(o=>o.ratio)),bad:bad.slice(0,6),sample:out.slice(0,4),style:st?st.textContent.replace(/\s+/g,' '):null, ls:linkStyleServiceInstance.currentValue}
+}
