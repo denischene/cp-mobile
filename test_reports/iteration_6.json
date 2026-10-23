@@ -1,0 +1,33 @@
+{
+  "summary": "Frontend-only tests of Confort+ mobile 6.0.0-alpha.1 (server build /js/toolbar.min.js) on /test-modal.html and /. Passing: reading-mask/rule fix (pointer-events:none, elementFromPoint returns #dialog-ok, #cp fill and #dialog-ok click work on desktop and in a Pixel-5-style touch context, pointermove/pointerdown/real taps move the masks and the rule, reset removes everything, no JS error); mobile read-aloud tooltip (coarse pointer gives 'Tap to vocalize, tap an empty area to stop, tap again to activate', desktop keeps 'Click to vocalize, press Esc or right_click to stop.'); a tap on an empty area stops speech (state 'suspended'); all read-aloud non-regressions; the palette opens with one click and nothing is read from it; 15 palette and reload cycles with no JS error. Adaptive links: the 3 requested configurations (a) link style only, (b) ivory_black, (c) reinforcedContrasts PASS, and the classes/style are removed on reset. BUT a HIGH bug remains when a 'Colors text/background' theme is combined with a link palette that does not match it: dark blue links on a black page (unreadable).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "ColorContrastService.resolveCssColor / buildAdaptiveLinksStyle", "issue": "When a 'Colors text/background' theme is active (ivory_black, black_ivory, black_green...), the probe span used to resolve the palette colour is forced to the theme's text colour by the stylesheet rule ':not(.cplus-container-buttons){color:X !important}', because an ordinary inline style loses to a stylesheet !important. So adjustColorForBackground compares the TEXT colour instead of the link colour. Reproduction on /: setColorsContrasts('ivory_black') + setLinkStyle('darkblue_orange_brown'), which is what the screenshot after the Easy+ mode showed: every link gets cplus-link-on-dark but stays 'darkblue' rgb(0,0,139) on black, unreadable. Other cases: black_ivory + lightblue palette leaves lightblue on ivory (unreadable); black_green turns all dark-variant link/visited/hover colours into #ffffff (the yellow/orange/blue palette is lost, link states can no longer be told apart); the light variant under ivory_black becomes rgb(112,113,0), derived from ivory.", "selector": "style#cplus-style-adaptive-links, a.cplus-link-on-dark", "priority": "HIGH"},
+      {"component": "I18nService (server build)", "issue": "On the very first visit (empty localStorage), getMessage() is called before the fetch of _locales/xx/messages.json has resolved, so JSON.parse(null) returns null and uncaught errors are thrown: \"Cannot read properties of null (reading 'mainButton')\" / \"(reading 'chooseModeAndValidate')\". The first page load has untranslated labels. Probably pre-existing, not tied to this iteration.", "selector": "cplus-app-root #confort[data-i18n-title=mainButton]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Read aloud, mobile", "issues": ["After an empty-area tap stops the speech, re-tapping the same text within 1 s does nothing: stopSpeech() arms the 1 s 'activate' window on lastSpokenTarget. Consider not arming the window when the stop came from an empty-area tap."]},
+      {"screen": "Mask reading guide", "issues": ["Right after activation the masks have no height (empty style.height), so nothing is masked until the first pointermove or tap. Consider initialising them around the middle of the viewport."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "HIGH: in color-contrast.service.ts resolveCssColor(), resolve the colour without the page theme interfering: probe.style.setProperty('color', cssColor, 'important') (checked in the browser: this returns rgb(0,0,139) for 'darkblue' under ivory_black, while the current code returns rgb(255,255,240)), or use a canvas 2D fillStyle, or append the probe to a detached element or the shadow root. Then re-check ivory_black + darkblue_orange_brown (links should become light), black_ivory + lightblue_orange_lightgreen (links should become dark) and black_green (yellow/orange/blue kept).",
+    "LOW: in the server I18nService.getMessage(), guard against a null translations object (return '' and re-run translation once the fetch resolves) to avoid the first-visit TypeError.",
+    "Optional: do not arm the 1 s pass-through window when speech is stopped by an empty-area tap; give the masks an initial height."
+  ],
+  "critical_code_review_comments": [
+    "resolveCssColor relies on getComputedStyle of an element inserted into the host page, so any page or theme rule with !important on color corrupts the result.",
+    "read-aloud.service.ts is about 720 lines; consider splitting it (tooltip, gesture handling, speech).",
+    "reading-guide.service.ts is correct now: the listeners are null-safe, pointer-events:none is set on the masks, the rule and the label, and the listeners are removed in resetGuide."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "92% (adaptive links OK in the 3 requested configurations but broken for theme + mismatched palette)"},
+  "seed_data_creation": "None. DOM elements (paragraphs, link, h2[aria-expanded] accordion, button) were injected at runtime into test-modal.html for the read-aloud tests.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Touch emulation: browser.new_context(viewport 393x727, is_mobile=True, has_touch=True, Pixel 5 UA) makes matchMedia('(pointer: coarse)') true. On test-modal.html, remove .ui-widget-overlay and .ui-dialog before tapping page text, otherwise the overlay receives the taps. Valid colour themes: ivory_black, black_ivory, white_red, black_yellow, white_blue, yellow_blue, black_green, daltonism, reinforcedContrasts (black_white etc. do not exist). Each theme sets linkStyleServiceInstance.currentValue from colorContrastDictionnary. Do not take PNG screenshots with quality (use .jpeg). Multiclick storage shift not testable on the server build.",
+  "rca of the issue": "Adaptive links: buildAdaptiveLinksStyle -> adjustColorForBackground -> resolveCssColor creates <span style='color:darkblue'> under body. The theme stylesheet sets ':not(.cplus-container-buttons){color:ivory !important}', and an ordinary inline style loses to a stylesheet !important, so the computed colour is ivory. The contrast of ivory with black is fine, so the original 'darkblue' is returned unchanged for the dark variant, giving dark blue on black. Mitigation: set the probe colour with 'important' priority, or resolve colours with a canvas."
+}
