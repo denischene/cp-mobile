@@ -1193,5 +1193,8 @@
 	},
 	"readAloud_noDescription": {
 		"message": "sin descripción"
+	},
+	"readAloud_tooltip_mobile": {
+		"message": "Toca para vocalizar, toca una zona vacía para parar, vuelve a tocar para activar"
 	}
 }

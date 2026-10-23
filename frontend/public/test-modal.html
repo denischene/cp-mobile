@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harnais de test - modale type jQuery UI (ameli)</title>
+<style>
+  body { font-family: sans-serif; margin: 0; padding: 1rem; }
+  .ui-front { z-index: 100; }
+  .ui-widget-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #aaa; opacity: .3; }
+  .ui-dialog { position: absolute; top: 120px; left: 20px; width: 300px; background: #fff; border: 1px solid #ddd; padding: 1rem; }
+  .page-content { height: 1500px; }
+</style>
+</head>
+<body>
+  <div class="page-content">
+    <h1>Page de test</h1>
+    <p id="page-text">Un paragraphe de contenu avec un <a href="#x">lien</a> pour tester.</p>
+    <div id="dark-band" style="background:#111;color:#eee;padding:1rem">Bandeau sombre avec un <a id="dark-link" href="#y">lien sur fond sombre</a>.</div>
+  </div>
+
+  <div class="ui-widget-overlay ui-front"></div>
+  <div class="ui-dialog ameli-localisation-dialog ui-widget ui-widget-content ui-front" role="dialog" aria-modal="true" tabindex="-1" aria-label="Votre caisse d'assurance maladie">
+    <h2 id="dialog-title">Votre caisse d'assurance maladie</h2>
+    <label for="cp">Code postal</label>
+    <input id="cp" type="text">
+    <button id="dialog-ok" type="button">Valider</button>
+  </div>
+
+  <script>
+    window.__CONFORT_BASE__ = window.location.origin;
+    var s = document.createElement('script');
+    s.src = '/js/toolbar.min.js';
+    document.body.appendChild(s);
+  </script>
+</body>
+</html>

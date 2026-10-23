@@ -1190,5 +1190,8 @@
 	},
 	"readAloud_noDescription": {
 		"message": "brak opisu"
+	},
+	"readAloud_tooltip_mobile": {
+		"message": "Dotknij, aby odczytać, dotknij pustego miejsca, aby zatrzymać, dotknij ponownie, aby uruchomić"
 	}
 }

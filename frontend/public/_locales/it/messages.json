@@ -1175,5 +1175,8 @@
 	},
 	"readAloud_noDescription": {
 		"message": "nessuna descrizione"
+	},
+	"readAloud_tooltip_mobile": {
+		"message": "Tocca per vocalizzare, tocca un’area vuota per fermare, tocca di nuovo per attivare"
 	}
 }

@@ -1190,5 +1190,8 @@
 	},
 	"readAloud_noDescription": {
 		"message": "no description"
+	},
+	"readAloud_tooltip_mobile": {
+		"message": "Tap to vocalize, tap an empty area to stop, tap again to activate"
 	}
 }

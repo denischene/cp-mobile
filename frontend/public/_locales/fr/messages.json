@@ -1175,5 +1175,8 @@
 	},
 	"readAloud_noDescription": {
 		"message": "absence de description"
+	},
+	"readAloud_tooltip_mobile": {
+		"message": "Tap pour vocaliser, Tap zone vide pour arrêter, Re-tap pour actionner"
 	}
 }
