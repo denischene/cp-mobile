@@ -225,3 +225,40 @@ n'est pas testable en preview : à valider par l'utilisateur sur Le Monde.
 
 Tests : `/app/test_reports/iteration_5.json` — 7/7 scénarios OK, 0 erreur JS, non-régressions
 vocalisation (itération 4) et plantage des menus confirmées. Paquets régénérés (.xpi + ZIP /cpm).
+
+## Journal (23/06/2026 — infobulle mobile, modale ameli, liens adaptatifs généralisés, multiclics)
+1. **Infobulle mobile** (`read-aloud.service.ts`) : nouveau message `readAloud_tooltip_mobile`
+   (fr/en/es/it/pl) affiché quand `matchMedia('(pointer: coarse)')` — « Tap pour vocaliser, Tap zone
+   vide pour arrêter, Re-tap pour actionner » ; un tap sur une zone vide arrête désormais la
+   vocalisation (sans armer la fenêtre d'activation d'1 s, donc un re-tap relit le même texte).
+2. **Modale inaccessible (ameli.fr)** — cause trouvée : les masques du réglage « Guide de lecture »
+   (`reading-guide.service.ts`) sont des div plein écran rgba(0,0,0,.5) en z-index infini SANS
+   `pointer-events: none`, déplacées uniquement par `mousemove` : sur mobile (pas de survol) elles
+   restaient figées après le mousemove synthétique du tap et recouvraient toute la page, dont la
+   modale, en avalant tous les taps — la palette restant utilisable. Correctifs : `pointer-events: none`
+   sur les masques / la règle / le libellé, écouteurs `pointermove` + `pointerdown` (la bande suit les
+   taps), hauteur initiale au milieu de l'écran, handler null-safe, plus de `stopPropagation`.
+3. **Boutons multiclics décalés d'un cran** (`extension/services/local-storage.service.ts`) :
+   l'événement `storage-<clé>` était émis AVANT l'écriture `chrome.storage` (régression introduite au
+   durcissement Chrome) ; les composants relisaient donc la valeur précédente. L'événement est
+   maintenant émis après la résolution des écritures. **Non vérifiable en preview** (la version
+   serveur est synchrone) : à confirmer sur l'appareil.
+4. **Liens adaptatifs généralisés** (`color-contrast.service.ts`) : actifs pour TOUTES les valeurs de
+   « Couleurs texte/fond » dès qu'une palette de liens est active (ou en contrastes renforcés).
+   Chaque lien porte ses propres couleurs via `--cplus-link-color` / `--cplus-link-pointed-color` /
+   `--cplus-link-visited-color`, calculées contre son fond réel composité (alpha-blending des fonds
+   semi-transparents), avec décision clair/sombre par comparaison de contraste (et non par seuil de
+   luminance), décalage du fond pour l'état survolé (sans franchir la frontière clair/sombre) et gel
+   temporaire des transitions CSS pendant la mesure. Cache par fond pour le coût.
+5. Corrections annexes : virgule manquante dans `color-read.component.ts` (la 1re valeur était
+   'noModificationssplitSyllables_word' et faisait planter `BtnSettingComponent.setTitle` à chaque
+   rendu des réglages) + garde dans `setTitle` ; i18n serveur protégé à la première visite avec
+   re-traduction après le fetch ; la vocalisation ne découpe plus les conteneurs flex/grid (espaces et
+   gaps perdus) ; « Clic adapté » ne force plus `display: inline-block` sur une cible flex/grid
+   (icônes qui passaient au-dessus du libellé, CTA déformé).
+
+Tests : itérations 6 à 11 (`/app/test_reports/iteration_6..11.json`) — tous les points ci-dessus
+validés (contrastes >= 4.5:1 mesurés au survol réel sur tous les liens et tous les thèmes, masques,
+infobulles, règles de vocalisation, palette non impactée, 15 cycles de navigation sans erreur JS).
+Dernier correctif (« Clic adapté » / display) vérifié manuellement seulement, à la demande de
+l'utilisateur d'arrêter les tests automatiques.
