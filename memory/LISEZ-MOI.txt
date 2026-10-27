@@ -1,38 +1,42 @@
-Confort+ Mobile — site statique
-================================
+Confort+ Mobile — site statique pour conf-plus-mobile.oakcess.fr/cpm/
+====================================================================
 
-Contenu : build statique prêt à déposer dans le sous-dossier /cpm de cpm.oakcess.fr
-URL cible : https://cpm.oakcess.fr/cpm/
+CONTENU DE CETTE ARCHIVE
+  index.html                 page du site (chemins préfixés /cpm/)
+  .htaccess                  types MIME .xpi + routage + cache (Apache/OVH)
+  static/                    JS + CSS du site React
+  downloads/                 orange-confort-plus-6.0.0-alpha.1-android.xpi
+  js/, css/, assets/,
+  fonts/, _locales/          version serveur de Confort+ (barre d'outils)
+  favicon.ico, logo192.png, manifest.json, robots.txt
 
-INSTALLATION
-1. Décompressez l'archive.
-2. Copiez TOUT le contenu (y compris le fichier caché .htaccess) dans le dossier /cpm
-   à la racine web du domaine : /var/www/.../cpm/
-3. Vérifiez https://cpm.oakcess.fr/cpm/
+INSTALLATION SUR OVH
+  1. Connecte-toi en FTP/SFTP (ou via l'Explorateur de fichiers OVH).
+  2. Place-toi dans la racine web du domaine conf-plus-mobile.oakcess.fr
+     (en général www/ ou public_html/ ; sur un multisite OVH, le dossier
+     configuré comme racine du domaine).
+  3. Crée un dossier nommé exactement : cpm
+  4. Décompresse l'archive et envoie TOUT son contenu dans ce dossier cpm/
+     (le contenu, pas le dossier zip lui-même).
+     ATTENTION : le fichier .htaccess est masqué par défaut — pense à
+     activer « afficher les fichiers cachés » dans ton client FTP.
+  5. Vérifie l'arborescence finale :
+       www/cpm/index.html
+       www/cpm/.htaccess
+       www/cpm/static/...
+       www/cpm/downloads/orange-confort-plus-6.0.0-alpha.1-android.xpi
+       www/cpm/js/toolbar.min.js
+  6. Ouvre https://conf-plus-mobile.oakcess.fr/cpm/
 
-IMPORTANT : le site est compilé pour le chemin /cpm/. S'il doit être servi à la
-racine du domaine ou dans un autre dossier, il faut le recompiler avec
-PUBLIC_URL=<chemin>.
+SI LE .XPI SE TÉLÉCHARGE EN .ZIP OU S'OUVRE COMME DU TEXTE
+  C'est que le .htaccess n'a pas été envoyé (ou que mod_rewrite/AddType est
+  désactivé). Renvoie le fichier .htaccess à la racine de cpm/.
 
-CONTENU
-- index.html, static/      : application React (page de déploiement)
-- downloads/               : orange-confort-plus-6.0.0-alpha.1-android.xpi + guide
-- js/, css/, assets/, _locales/, COPYING.txt : Confort+ « version serveur »
-  (widget injecté directement dans la page)
-- .htaccess                : Apache — types MIME (.xpi) + routage SPA
+MISE À JOUR DE L'EXTENSION PLUS TARD
+  Remplace uniquement le fichier dans cpm/downloads/ en gardant le même nom,
+  ou demande-moi un nouveau paquet complet.
 
-SERVEUR APACHE
-Le .htaccess fourni suffit (mod_rewrite + mod_mime activés).
-
-SERVEUR NGINX
-Ajoutez dans le bloc server :
-
-    location /cpm/ {
-        alias /chemin/vers/cpm/;
-        try_files $uri $uri/ /cpm/index.html;
-    }
-    types { application/x-xpinstall xpi; }
-
-NOTE : le fichier .xpi n'est pas signé par Mozilla. Il s'installe uniquement sur
-Firefox Nightly Android avec xpinstall.signatures.required = false (voir le guide
-downloads/ANDROID_FIREFOX.md).
+REMARQUE
+  Le .xpi n'est pas signé par Mozilla : il s'installe uniquement dans
+  Firefox Nightly pour Android avec la collection de modules de débogage
+  (procédure détaillée sur la page du site).
