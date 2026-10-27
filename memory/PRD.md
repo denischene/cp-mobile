@@ -262,3 +262,45 @@ validés (contrastes >= 4.5:1 mesurés au survol réel sur tous les liens et tou
 infobulles, règles de vocalisation, palette non impactée, 15 cycles de navigation sans erreur JS).
 Dernier correctif (« Clic adapté » / display) vérifié manuellement seulement, à la demande de
 l'utilisateur d'arrêter les tests automatiques.
+
+## Journal (27/06/2026 — Loupes continues : Loupe souris, Focus-loupe, Agrandisseur)
+Le bouton multiclic « Loupe » expose désormais trois types de loupe reliés par une continuité
+de zoom ×2 → ×20, sur PC et mobile, dans l'extension comme dans la version serveur.
+
+Fichiers :
+- `src/app/core/constantes.core.ts` : types (`mouse`/`focus`/`screen`), plages (×2–4, ×2–9, ×8–20),
+  niveaux d'entrée (focus ×5, agrandisseur ×10), zoom navigateur ajouté (+10 % / +30 %), niveau de
+  repli (×12), tailles et délais (bulle 280 px, badge 2 s, pastille mobile 3 s).
+- `src/app/services/settings/magnifier.service.ts` : réécrit. Moteur unique par copie de page
+  (recadrée sur un point en coordonnées document) pour les trois types ; continuité montante et
+  descendante entre types ; zoom navigateur appliqué par type au-dessus du zoom de l'utilisateur et
+  restitué à l'extinction ; guide de lecture mis en pause puis repris ; badge ×N ; pastille + / -
+  mobile ; escamotage (Échap., clic droit) avec pastille loupe et retour par clic/Entrée ;
+  exploration automatique puis manuelle du Focus-loupe avec flèches de bord ; barres d'arrivée en
+  bord de page ; défilement aux bords pour l'Agrandisseur ; repli automatique si la copie dépasse
+  400 ms. **Toutes les couches sont en `pointer-events: none`** et le `z-index` reste sous la
+  palette, qui demeure visible et cliquable même en Agrandisseur.
+- `src/app/shared/settings/magnifier.component.ts` : valeurs par défaut `noModifications,mouse_x2,focus_x5`.
+- `src/app/pages/edit-setting/settings/edit-magnifier.component.ts` : réglages fins à deux lignes
+  (type puis niveau, niveaux filtrés par type) ; toute combinaison hors multiclic devient la 4e
+  valeur personnalisée, avec une infobulle au libellé lisible.
+- `src/assets/json/modes-of-use.json` (version 1.0.49, remet « sans loupe » partout) :
+  Facile+ et autres `noModifications,mouse_x2,focus_x5` · Vision+ `noModifications,mouse_x4,focus_x5`
+  · Vision++ `noModifications,focus_x7,screen_x9`.
+- `src/_locales/*/messages.json` : libellés des trois types, `magnifier_values`, labels des deux
+  lignes de réglage et niveaux ×2 à ×20, dans les cinq langues.
+
+Vérifié en preview (version serveur, aucune erreur JS) : les trois types s'affichent et suivent
+pointeur / focus / écran ; continuité mouse ×4 → focus ×5 → screen ×10 et retour ; multiclic
+Facile+ (sans loupe → souris ×2 → focus ×5) ; réglages fins à deux lignes et 4e valeur
+`screen_x9` enregistrée ; zoom navigateur 1,1 / 1,3 appliqué puis retiré ; guide de lecture
+suspendu puis rétabli ; Tab pilote le Focus-loupe ; clic droit escamote, clic restaure ; +, -,
+Ctrl+molette et flèches changent le niveau ou déplacent la vue ; la saisie clavier n'est pas captée.
+
+Non vérifiable ici (à valider sur appareil) : suivi du doigt et pastille + / - en conditions
+tactiles réelles, et le rendu dans l'extension Firefox Nightly Android.
+
+Écart assumé par rapport au plan : **le moteur par capture d'écran n'est pas utilisé** — les trois
+loupes reposent sur la copie de page, dans l'extension comme sur le serveur. Aucune nouvelle
+permission navigateur n'est donc demandée (repli prévu par le plan). Phases 2 et 3 (scintillement,
+iframes/PDF, mémorisation du dernier type, page d'aide, signature AMO) restent ouvertes.

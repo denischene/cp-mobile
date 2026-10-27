@@ -514,22 +514,10 @@
 		"message": "Loupe"
 	},
 	"setting_magnifier_instruction": {
-		"message": "Pour agrandir ponctuellement."
+		"message": "Pour agrandir une zone, l'élément focalisé ou tout l'écran."
 	},
 	"magnifier_noModifications": {
 		"message": "sans loupe"
-	},
-	"magnifier_zoom2": {
-		"message": "×2"
-	},
-	"magnifier_zoom5": {
-		"message": "×5"
-	},
-	"magnifier_zoom10": {
-		"message": "×10"
-	},
-	"magnifier_zoom15": {
-		"message": "×15"
 	},
 	"setting_readAloud": {
 		"message": "Lire à haute voix"
@@ -1178,5 +1166,157 @@
 	},
 	"readAloud_tooltip_mobile": {
 		"message": "Tap pour vocaliser, Tap zone vide pour arrêter, Re-tap pour actionner"
+	},
+	"mouse": {
+		"message": "loupe souris"
+	},
+	"focus": {
+		"message": "focus-loupe"
+	},
+	"screen": {
+		"message": "agrandisseur"
+	},
+	"magnifier_values": {
+		"message": "$TYPE$ $LEVEL$",
+		"placeholders": {
+			"type": {
+				"content": "$1"
+			},
+			"level": {
+				"content": "$2"
+			}
+		}
+	},
+	"magnifierType_label": {
+		"message": "Type de loupe"
+	},
+	"magnifierLevel_label": {
+		"message": "Niveau de zoom"
+	},
+	"magnifierType_none": {
+		"message": "sans loupe"
+	},
+	"magnifierType_mouse": {
+		"message": "loupe souris"
+	},
+	"magnifierType_focus": {
+		"message": "focus-loupe"
+	},
+	"magnifierType_screen": {
+		"message": "agrandisseur"
+	},
+	"x2": {
+		"message": "×2"
+	},
+	"magnifierLevel_x2": {
+		"message": "×2"
+	},
+	"x3": {
+		"message": "×3"
+	},
+	"magnifierLevel_x3": {
+		"message": "×3"
+	},
+	"x4": {
+		"message": "×4"
+	},
+	"magnifierLevel_x4": {
+		"message": "×4"
+	},
+	"x5": {
+		"message": "×5"
+	},
+	"magnifierLevel_x5": {
+		"message": "×5"
+	},
+	"x6": {
+		"message": "×6"
+	},
+	"magnifierLevel_x6": {
+		"message": "×6"
+	},
+	"x7": {
+		"message": "×7"
+	},
+	"magnifierLevel_x7": {
+		"message": "×7"
+	},
+	"x8": {
+		"message": "×8"
+	},
+	"magnifierLevel_x8": {
+		"message": "×8"
+	},
+	"x9": {
+		"message": "×9"
+	},
+	"magnifierLevel_x9": {
+		"message": "×9"
+	},
+	"x10": {
+		"message": "×10"
+	},
+	"magnifierLevel_x10": {
+		"message": "×10"
+	},
+	"x11": {
+		"message": "×11"
+	},
+	"magnifierLevel_x11": {
+		"message": "×11"
+	},
+	"x12": {
+		"message": "×12"
+	},
+	"magnifierLevel_x12": {
+		"message": "×12"
+	},
+	"x13": {
+		"message": "×13"
+	},
+	"magnifierLevel_x13": {
+		"message": "×13"
+	},
+	"x14": {
+		"message": "×14"
+	},
+	"magnifierLevel_x14": {
+		"message": "×14"
+	},
+	"x15": {
+		"message": "×15"
+	},
+	"magnifierLevel_x15": {
+		"message": "×15"
+	},
+	"x16": {
+		"message": "×16"
+	},
+	"magnifierLevel_x16": {
+		"message": "×16"
+	},
+	"x17": {
+		"message": "×17"
+	},
+	"magnifierLevel_x17": {
+		"message": "×17"
+	},
+	"x18": {
+		"message": "×18"
+	},
+	"magnifierLevel_x18": {
+		"message": "×18"
+	},
+	"x19": {
+		"message": "×19"
+	},
+	"magnifierLevel_x19": {
+		"message": "×19"
+	},
+	"x20": {
+		"message": "×20"
+	},
+	"magnifierLevel_x20": {
+		"message": "×20"
 	}
 }
