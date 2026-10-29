@@ -529,7 +529,7 @@
 		"message": "El texto puede leerse previa solicitud"
 	},
 	"readAloud_tooltip": {
-		"message": "Haga clic para vocalizar, pulse Esc. o haga clic derecho para detener"
+		"message": "Haga clic para leer en voz alta,\npulse Esc o haga clic derecho para detener."
 	},
 	"readAloud_noModifications": {
 		"message": "sin vocalización"
@@ -1336,5 +1336,8 @@
 	},
 	"magnifierLevel_x20": {
 		"message": "×20"
+	},
+	"magnifier_shortcut": {
+		"message": "Lupa: Ctrl + Mayús + Z para activar o desactivar."
 	}
 }

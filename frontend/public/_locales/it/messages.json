@@ -526,7 +526,7 @@
 		"message": "Per farsi leggere il testo su richiesta."
 	},
 	"readAloud_tooltip": {
-		"message": "Clicca per vocalizzare, premi Esc o clic destro per interrompere la vocalizzazione."
+		"message": "Clicca per la lettura ad alta voce,\npremi Esc o fai clic destro per fermare."
 	},
 	"readAloud_noModifications": {
 		"message": "senza vocalizzazione"
@@ -1318,5 +1318,8 @@
 	},
 	"magnifierLevel_x20": {
 		"message": "×20"
+	},
+	"magnifier_shortcut": {
+		"message": "Lente: Ctrl + Maiusc + Z per attivare o disattivare."
 	}
 }

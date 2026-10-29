@@ -526,7 +526,7 @@
 		"message": "To have text read aloud on request."
 	},
 	"readAloud_tooltip": {
-		"message": "Click to vocalize, press Esc or right_click to stop."
+		"message": "Click to read aloud,\npress Esc or right-click to stop."
 	},
 	"readAloud_noModifications": {
 		"message": "no vocalization"
@@ -1333,5 +1333,8 @@
 	},
 	"magnifierLevel_x20": {
 		"message": "×20"
+	},
+	"magnifier_shortcut": {
+		"message": "Magnifier: Ctrl + Shift + Z to turn on or off."
 	}
 }

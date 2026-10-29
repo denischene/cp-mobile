@@ -526,7 +526,7 @@
 		"message": "Pour se faire lire le texte sur demande."
 	},
 	"readAloud_tooltip": {
-		"message": "Cliquer pour vocaliser, appuyer sur Échap ou cliquer droit pour arrêter la vocalisation."
+		"message": "Cliquez pour vocaliser,\nappuyez sur Échap. ou clic droit pour arrêter."
 	},
 	"readAloud_noModifications": {
 		"message": "sans vocalisation"
@@ -1318,5 +1318,8 @@
 	},
 	"magnifierLevel_x20": {
 		"message": "×20"
+	},
+	"magnifier_shortcut": {
+		"message": "Loupe : Ctrl + Maj + Z pour activer ou désactiver."
 	}
 }

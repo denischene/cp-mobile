@@ -526,7 +526,7 @@
 		"message": "Aby przeczytać tekst na żądanie"
 	},
 	"readAloud_tooltip": {
-		"message": "Kliknij, aby zwerbalizować, naciśnij Escape lub kliknij prawym przyciskiem myszy, aby zatrzymać werbalizację."
+		"message": "Kliknij, aby odczytać,\nnaciśnij Esc lub kliknij prawym przyciskiem, aby zatrzymać."
 	},
 	"readAloud_noModifications": {
 		"message": "bez werbalizacji"
@@ -1333,5 +1333,8 @@
 	},
 	"magnifierLevel_x20": {
 		"message": "×20"
+	},
+	"magnifier_shortcut": {
+		"message": "Lupa: Ctrl + Shift + Z, aby włączyć lub wyłączyć."
 	}
 }

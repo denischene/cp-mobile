@@ -31,7 +31,7 @@ export const Hero = () => {
           <br />
           arrive sur mobile.
         </h1>
-        <p className="mt-6 text-base md:text-lg text-confort-ink/70 dark:text-white max-w-2xl leading-relaxed">
+        <p className="mt-6 text-base md:text-lg text-confort-ink/85 dark:text-white max-w-2xl leading-relaxed">
           Confort+ facilite la lecture et la navigation sur les pages web : texte plus lisible,
           vocalisation, gros pointeur, boutons multi-clics et modes d'usage. Ce portage adapte la
           palette et le fonctionnement de l'extension pour les petits écrans de Firefox Nightly

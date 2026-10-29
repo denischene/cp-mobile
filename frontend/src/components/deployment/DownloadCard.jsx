@@ -15,7 +15,7 @@ export const DownloadCard = () => {
         <h2 className="text-3xl font-bold text-confort-ink dark:text-white mb-2">
           Test temporaire sur Firefox Nightly Android
         </h2>
-        <p className="text-confort-ink/70 dark:text-white max-w-2xl mb-8">
+        <p className="text-confort-ink/85 dark:text-white max-w-2xl mb-8">
           Extension non signée à charger manuellement dans Firefox Nightly pour Android.
           Suivez les étapes ci-dessous pour configurer le navigateur puis installer l'extension.
         </p>
@@ -33,7 +33,7 @@ export const DownloadCard = () => {
                 <p className="font-semibold text-confort-ink dark:text-white m-0">
                   orange-confort-plus-6.0.0-alpha.1-android.xpi
                 </p>
-                <p className="text-sm text-confort-ink/60 dark:text-white/70 m-0">
+                <p className="text-sm text-confort-ink/85 dark:text-white/70 m-0">
                   Version 6.0.0-alpha.1 · ~1,6 Mo · non signée
                 </p>
               </div>
@@ -70,7 +70,7 @@ export const DownloadCard = () => {
                   Télécharger depuis votre téléphone
                 </p>
               </div>
-              <p className="text-xs text-confort-ink/60 dark:text-white m-0 leading-relaxed max-w-sm">
+              <p className="text-xs text-confort-ink/85 dark:text-white m-0 leading-relaxed max-w-sm">
                 Scannez ce QR code avec l'appareil photo de votre téléphone pour télécharger le
                 fichier .xpi directement sur votre appareil Android.
               </p>
@@ -85,7 +85,7 @@ export const DownloadCard = () => {
               target="_blank"
               rel="noopener noreferrer"
               data-testid={DEPLOYMENT.downloadGuideLink}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-confort-ink/70 dark:text-white hover:text-confort-orange"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-confort-ink/85 dark:text-white hover:text-confort-orange"
             >
               <FileText className="w-4 h-4 dark:text-confort-orange" aria-hidden="true" />
               Guide d'installation complet
@@ -95,7 +95,7 @@ export const DownloadCard = () => {
               target="_blank"
               rel="noopener noreferrer"
               data-testid={DEPLOYMENT.downloadGithubLink}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-confort-ink/70 dark:text-white hover:text-confort-orange"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-confort-ink/85 dark:text-white hover:text-confort-orange"
             >
               <Github className="w-4 h-4 dark:text-confort-orange" aria-hidden="true" />
               Code source (branche develop)

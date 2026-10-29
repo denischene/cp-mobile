@@ -304,3 +304,56 @@ tactiles réelles, et le rendu dans l'extension Firefox Nightly Android.
 loupes reposent sur la copie de page, dans l'extension comme sur le serveur. Aucune nouvelle
 permission navigateur n'est donc demandée (repli prévu par le plan). Phases 2 et 3 (scintillement,
 iframes/PDF, mémorisation du dernier type, page d'aide, signature AMO) restent ouvertes.
+
+## Journal (29/06/2026 — retours loupes, paquets PC, site)
+Site statique (`frontend/src/components/deployment/`) :
+- `ServerVersionInfo.jsx` : le lien du paragraphe « version serveur » pointe sur
+  confort-plus.orange.com.
+- Tous les textes gris clairs sur fond pâle passent en gris foncé
+  (`text-confort-ink/50|60|70|80` -> `/85`) dans Hero, DownloadCard, InstallSteps,
+  ExperimentalBanner, ServerVersionInfo.
+- Nouveau `DesktopDownloads.jsx` : paquets Firefox PC (.xpi) et Chrome/Edge (.zip), avec la
+  marche à suivre pour chaque navigateur.
+
+Extension / version serveur :
+- `read-aloud.service.ts` + locales : infobulle PC reformulée sur deux lignes
+  (« Cliquez pour vocaliser, / appuyez sur Échap. ou clic droit pour arrêter. »), rendu via
+  `white-space: pre-line`.
+- `magnifier.service.ts` :
+  * **Butées de page** : quatre bandes rouges de 12 px (haut, bas, gauche, droite) en
+    Agrandisseur, affichées seulement quand la page ne peut plus défiler de ce côté ET que le
+    point visé est dans la marge correspondante — donc aussi bien aux flèches, à la souris
+    qu'avec les boutons Monter/Descendre (déclenchés par l'écoute du `scroll`).
+  * **Focus-loupe** : la fenêtre se pose désormais PAR-DESSUS l'élément focalisé (centrée
+    dessus) ; flèches d'exploration haut/bas en plus de gauche/droite, et les touches
+    ArrowUp/ArrowDown décalent la vue quand l'élément est plus haut que la fenêtre
+    (`exploreOffsetY`).
+  * **Premier clic = pose de la loupe, second clic = activation** (comme la vocalisation) :
+    écouteur `click` en capture, `MAGNIFIER_ACTIONABLE_SELECTOR`, fenêtre de 1,5 s
+    (`MAGNIFIER_ARM_DELAY`). La palette Confort+ et la pastille + / - ne sont jamais concernées.
+  * **Ctrl + Maj + Z** : bascule « sans loupe » <-> dernière valeur utilisée sans ouvrir la
+    palette (écouteur permanent posé dans le constructeur, valeur enregistrée dans le mode
+    d'usage comme un réglage normal).
+  * **Pop-ups natives** : une `<dialog>` ouverte avec `showModal()` (cas free.fr) vit dans le
+    *top layer*, qu'aucun z-index n'atteint. La loupe devient un `popover="manual"` monté dans
+    le top layer uniquement tant qu'une telle pop-up est ouverte (`ensureTopLayer`), puis
+    redescend sous la palette. La copie de page repose les `dialog[open]` / `[popover]` à leur
+    position réelle (`copyTopLayerElements`) pour que leur contenu soit réellement agrandi.
+  * z-index porté à 2147483646 (au-dessus des pop-ups à z-index, sous la palette).
+
+Paquets (`package.json`) : nouveaux scripts `zip:firefox-pc`, `zip:chrome-edge` et
+`package:all`. Trois artefacts produits et publiés dans `frontend/public/downloads/` :
+`-android.xpi`, `-firefox.xpi` (manifeste Gecko), `-chrome-edge.zip` (manifeste Chromium,
+service worker).
+
+Site statique republié : `confort-plus-site-statique-cpm.zip` (66 fichiers, 6,6 Mo) contient
+bien la version serveur à jour (vérifié : `ensureTopLayer`, `copyTopLayerElements`, `armClick`
+présents dans `js/toolbar.min.js`), les trois paquets et les locales. **L'ancien ZIP en ligne
+sur conf-plus-mobile.oakcess.fr/cpm/ doit être remplacé par celui-ci.**
+
+Vérifié en preview (zéro erreur JS) : infobulle sur deux lignes ; bandes rouges 12 px
+#dd0000 aux limites et absentes au centre ; fenêtre Focus-loupe superposée et centrée sur
+l'élément ; 1er clic arme / 2e clic active pour les trois types et clic unique quand la loupe
+est éteinte ; Ctrl+Maj+Z allume, éteint et rallume la dernière valeur ; pop-up native
+surmontée par la loupe, contenu agrandi, champ et bouton toujours utilisables ; palette
+au-dessus de la loupe hors pop-up (2147483647 contre 2147483646).

@@ -12,18 +12,18 @@ export const ServerVersionInfo = () => {
               La « version serveur », active ici même
             </h2>
           </div>
-          <p className="text-confort-ink/70 dark:text-white leading-relaxed">
+          <p className="text-confort-ink/85 dark:text-white leading-relaxed">
             Confort+ ne fonctionne pas uniquement comme extension de navigateur. Un site peut
             aussi l'intégrer directement, sans installation, via un simple script hébergé. C'est
             le cas sur cette page&nbsp;: la pastille d'accessibilité affichée à l'écran vient de
             ce script, exactement comme sur{" "}
             <a
-              href="https://www.confort-plus.fr"
+              href="https://confort-plus.orange.com"
               target="_blank"
               rel="noopener noreferrer"
               className="underline font-medium hover:text-confort-orange dark:text-confort-orange"
             >
-              confort-plus.fr
+              confort-plus.orange.com
             </a>
             . Ouvrez la palette pour retrouver les mêmes modes d'usage et boutons multi-clics que
             dans l'extension mobile.
@@ -37,7 +37,7 @@ export const ServerVersionInfo = () => {
           <pre className="text-xs bg-confort-ink dark:border dark:border-white text-white/90 rounded-lg p-4 overflow-x-auto max-w-full">
             <code className="whitespace-pre-wrap break-all">{`<script src="https://votre-site.fr/js/toolbar.min.js">\n</script>`}</code>
           </pre>
-          <p className="text-sm text-confort-ink/60 dark:text-white mt-3">
+          <p className="text-sm text-confort-ink/85 dark:text-white mt-3">
             Une ligne suffit pour proposer Confort+ à tous les visiteurs de votre site, mobile
             compris — sans passer par une extension.
           </p>

@@ -10,9 +10,9 @@ const StepSection = ({ icon: Icon, label, title, subtitle, items }) => (
       </h4>
     </div>
     {subtitle && (
-      <p className="text-xs text-confort-ink/50 dark:text-white/50 mb-3 ml-6 italic">{subtitle}</p>
+      <p className="text-xs text-confort-ink/85 dark:text-white/50 mb-3 ml-6 italic">{subtitle}</p>
     )}
-    <ol className="space-y-2 text-sm text-confort-ink/70 dark:text-white list-decimal list-inside marker:text-confort-ink/70 dark:marker:text-confort-orange">
+    <ol className="space-y-2 text-sm text-confort-ink/85 dark:text-white list-decimal list-inside marker:text-confort-ink/85 dark:marker:text-confort-orange">
       {items.map((item, i) => (
         <li key={i}>{item}</li>
       ))}
@@ -33,7 +33,7 @@ export const InstallSteps = () => {
           <>Accéder à la page <code className="bg-black/5 dark:bg-white/15 dark:text-white px-1 rounded text-xs">about:config</code> en tapant <code className="bg-black/5 dark:bg-white/15 dark:text-white px-1 rounded text-xs">about:config</code> dans la barre d'adresse.</>,
           "Cliquer sur « Accepter le risque et continuer ».",
           <>Taper <code className="bg-black/5 dark:bg-white/15 dark:text-white px-1 rounded text-xs">xpinstall.signatures.required</code> dans « Rechercher ».</>,
-          <>Double-cliquez dessus pour le mettre à <strong className="dark:text-white">false</strong>. <span className="block text-xs text-confort-ink/50 dark:text-white/60 mt-1">(Cela désactive la vérification des signatures pour les extensions, permettant d'installer des extensions non signées.)</span></>,
+          <>Double-cliquez dessus pour le mettre à <strong className="dark:text-white">false</strong>. <span className="block text-xs text-confort-ink/85 dark:text-white/60 mt-1">(Cela désactive la vérification des signatures pour les extensions, permettant d'installer des extensions non signées.)</span></>,
         ]}
       />
       <StepSection
