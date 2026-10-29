@@ -1,0 +1,93 @@
+Légende 
+DC: = Objectifs des modifications
+====> = fonctionnalités développées
+
+Site web : Build compilé pour le chemin /cpm/ : routeur avec basename, et toolbar.min.js patché pour charger ses JSON/icônes depuis /cpm/ et non la racine du domaine (sinon le widget ne trouvait pas ses ressources)
+
+Extension : 
+_______________________
+PASTILLE
+DC : Déplacement de la pastille au clavier sur PC et v. serveur et déplacement de la pastille sur mobile
+=====> Clavier : Tab pour focuser, Espace pour entrer en mode déplacement (4 triangles noirs à bord blanc épais apparaissent), flèches pour déplacer (16 px, 64 px avec Maj), Espace ou Échap pour poser. Les triangles s'affichent aussi pendant le drag souris et disparaissent au relâchement.
+Mobile tactile : touch-action: none + capture du pointeur + blocage du touchmove : la page ne défile plus pendant le déplacement, dans les deux sens. Position par défaut en bas à droite sur mobile (la position choisie par l'utilisateur reste prioritaire).
+_______________________
+BUG
+DC : Plantage palette sur la fonction Retour : 
+====> Concernant le plantage des menus, il a été constaté qu'il n'était pas aléatoire. Le bouton « retour » de l'en-tête diffusait une route undefined lorsque l'historique était vide (par exemple, sur la page d'accueil) : cela entraînait la suppression de la page courante de la palette sans remplacement, suivie de l'écriture d'une valeur undefined dans le stockage. Au chargement suivant, le JSON.parse ne fonctionnait plus, rendant la palette inopérante. Nous avons apporté des corrections à plusieurs niveaux : contrôle sur le bouton retour, routes inconnues ignorées, sécurisation des appels JSON.parse pour certains attributs, et le stockage refuse désormais d'écrire des valeurs invalides, en nettoyant automatiquement celles corrompues. Après une vingtaine de cycles de navigation intensive et rechargement, aucune erreur n'a été observée et la palette est restée fonctionnelle.
+
+DC : crash sous Chrome suite à inactivité
+====> Robustesse Chrome (crash après inactivité) — cause identifiée : toolbar.js pouvait être injecté deux fois dans la même page (Le Monde s'auto-rafraîchit et déclenche des dizaines d'événements tabs.onUpdated) ; or tous les services sont des singletons qui lèvent une exception à la 2ᵉ exécution, ce qui tuait la palette jusqu'au redémarrage. Correctifs : détection de la palette déjà présente avant toute injection, .catch sur tous les executeScript, filtrage des mises à jour d'onglet sans navigation réelle, et côté contenu un garde-fou sur le contexte d'extension (tous les appels chrome.storage protégés, repli sur le stockage de la page, tabId redemandé si le service worker a été recyclé). Non testable en preview : à valider chez vous sur Le Monde.
+
+_______________________
+LECTURE À HAUTE VOIX
+DC: Règles de vocalisation : cliquer gauche / Faire un tap / Tabuler sur l’élément ou faire Entrer sur un élément textuel ou un bouton ou un menu ou une liste déroulante... quand aucune vocalisation n’est en cours déclenche la vocalisation dudit élément (mot, phrase, paragraphe... en fonction de la valeur d’étendue qui est sélectionnée). Actuellement le fonctionnement est bon : l’élément activable est focusé et vocalisé sans pour autant déclencher son éventuelle activation.
+Cliquer gauche / Faire un tap / Tabuler sur l’élément ou faire Entrer sur un élément imagé possédant une alternative textuelle (quand aucune vocalisation en cours) déclenche la vocalisation complète dudit élément, c’est à dire toute l’alternative textuelle, quelle que que soit la valeur d’étendue (mot, phrase, paragraphe...) qui est sélectionnée. À défaut c’est la légende qui est vocalisée. À défaut c’est le texte «absence de description» qui est vocalisé.
+cliquer gauche ou droite / faire un Tap / faire Échap. / Tabuler depuis l’élément, ou faire Entrer sur l’élément de nature textuelle (qui n’est pas un élément activable au sens hyperlien, menu, liste déroulante, bouton) et qui est en cours de vocalisation, interrompt la vocalisation.
+cliquer gauche sur l’élément / faire un tap sur l’élément / ou faire Entrer sur l’élément activable (qui est un élément activable au sens hyperlien, menu, liste déroulante, bouton) et qui est en cours de vocalisation, et jusqu’à 1s après la fin de la vocalisation, interrompt la vocalisation et actionne l’élément.
+lorsque l’étendue de vocalisation est la phrase, la vocalisation doit se faire sur la phrase entière, qu’elle contienne ou pas des hyperliens. Une phrase est un ensemble de mots qui a priori commence par une majuscule et se termine par un point, mais ce n’est pas toujours le cas, ce peut être une simple suite de quelques mots sans point final. Par contre une phrase peut très bien être constituée uniquement d’hyperliens ou contenir des hyperliens.
+====> Actions comme clic, tap, focus Tab ou Entrée sur texte, bouton, menu ou liste déroulante déclenchent une vocalisation sans activation
+Les images sont vocalisées selon leur alternative textuelle, légende ou sinon indiquées comme « absence de description »
+Le texte en cours de lecture peut être interrompu par diverses actions (clic gauche/droite, Échap, changement de focus), avec gestion spécifique pour passer à un autre texte
+L’activation d’un élément en cours de lecture est gérée afin que clic ou Entrée interrompent et activent si dans la bonne fenêtre temporelle
+La lecture s’effectue par étendue phrase complète, les liens ou boutons étant lus individuellement
+L’étendue mot a été corrigée pour ne plus modifier le texte de la page
+
+ Infobulle mobile Lire à haute voix : « Tap pour vocaliser, Tap zone vide pour arrêter, Re-tap pour actionner » (fr/en/es/it/pl), et le tap sur une zone vide arrête bien la vocalisation.
+ Modale ameli.fr débloquée : les masques du guide de lecture restaient figés en plein écran sur mobile et avalaient tous les taps → pointer-events: none + suivi pointermove/pointerdown.
+ Couleurs de liens adaptatives généralisées à toutes les valeurs de « Couleurs texte/fond » : chaque lien calcule ses états normal/pointé/visité contre son fond réel composité.
+ Boutons multiclics/réglages : l'événement de stockage était émis avant l'écriture, les composants relisaient l'ancienne valeur (d'où le re-clic nécessaire) — corrigé. Non reproductible en preview (version serveur synchrone) : à confirmer sur l'appareil.
+ Annexes : plantage du rendu des réglages (virgule manquante dans color-read.component.ts), vocalisation qui cassait les conteneurs flex/grid, « Clic adapté » qui déformait les CTA/icônes.
+
+DC: les réglages choisis ne doivent pas impacter la palette. Or il semble que ce soit le cas pour la vocalisation car il faut désormais cliquer deux fois pour agir sur les boutons multiclics de la palette. En conséquence, ôter le comportement de « vocalisation-validation dans un temps imparti » sur les interfaces de la palette.
+====> La palette n'est plus impactée par la vocalisation. Deux causes de « double clic » ont été identifiées : le gestionnaire de clic ne distinguait pas les clics de l'interface Confort+, et le verrou « ne pas activer ce clic » pouvait rester actif. Sur mobile, bloquer le pointerdown supprime parfois le click attendu, ce qui affectait le clic sur la palette. Le verrou expire désormais automatiquement, excluant la palette du circuit : un seul clic agit et rien n'est vocalisé depuis la palette.
+_______________________
+INTERACTION
+DC: Certains titres de pages web sont non interactifs dans un navigateur sur PC, mais deviennent interactifs sur mobile (ils ont alors un comportement d’accordéons, c’est à dire qu’ils sont repliés et se déplient si l’on clique dessus). C’est le cas notamment des titres « Qu'est-ce qu'une homonymie ? », « Comment indiquer l'homonymie de titre dans un article » et suivants dans la page https://fr.wikipedia.org/wiki/Aide:Homonymie. Ces titres-accordéons ne fonctionnent pas avec Confort+ mobile quand « Lire à haute voix » est activé. La vocalisation est ok mais, comme il s’agit désormais d’un objet activable, il devrait récupérer le focus et un second tap dans un délai imparti devrait déplier-replier l’accordéon. Dès que « Lire à haute voix » est désactivé le fonctionnement d’accordéon redevient correct.
+====> Titres-accordéons (type Wikipédia mobile) : la fenêtre d'activation d'1 s s'applique désormais à tous les éléments vocalisés, pas seulement à ceux identifiés comme activables par le DOM. L'élément reçoit le focus quand il est interactif (aria-expanded, aria-controls, gestionnaire de clic) avec un tabindex temporaire nettoyé ensuite. Résultat : premier tap = lecture + focus sans déplier, deuxième tap dans la seconde = accordéon se déplie/replie, tap au-delà d'1 s = nouvelle lecture. Les titres encapsulés dans des spans étaient parfois non vocalisés, ce qui a été corrigé.
+
+DC : Resserrer les zones lors de la mise en œuvre de clics adaptés afin de ne pas trop modifier l’agencement de la page
+====> Clic adapté resserré — padding horizontal ramené de 1,375 rem à 0,125 rem (vertical conservé) : les rectangles collent désormais aux extrémités des liens et ne déforment plus la mise en page. Les listbox/select, combobox, inputs, textarea, summary et role=button/link/tab sont maintenant pris en compte (min 44×44 px, sans casser leur boîte). Les éléments déjà grands (tuiles de usage-modes.lovable.app, grandes cartes) ne sont plus agrandis du tout, mais gardent le surlignage au survol/focus. Vérifié : select → min-height 44 px, grande tuile → 0 px de variation, petit lien → +4 px en largeur seulement (contre +44 px avant), nettoyage complet au retour à « sans modification ».
+_______________________
+COULEURS TEXTE-FOND
+DC : Contrastes renforcés doit être étendu à tout texte trop peu lisible, pas seulement les gris
+====> ne repeint plus les fonds : le ratio WCAG est calculé élément par élément et seuls les textes sous 4.5:1 passent en noir (fond clair) ou blanc (fond foncé), avec restauration exacte au changement de valeur.
+Contrastes renforcés s'applique maintenant à tout texte dont le contraste réel est inférieur à 4.5:1, plus seulement aux gris :
+    texte gris / sans teinte → noir sur fond clair, blanc sur fond foncé
+    texte coloré → la teinte d'origine est conservée : seule la luminosité est assombrie ou éclaircie par paliers jusqu'à atteindre le seuil lisible (ex. orange #ffa726 → rgb(165, 98, 0) au lieu d'un noir brutal)
+    les fonds de page restent intacts
+    les textes chargés après l'activation (scroll infini, pages dynamiques comme Le Monde) sont corrigés automatiquement, avec un marquage interne pour qu'aucun élément ne soit recalculé deux fois
+    restauration exacte des couleurs d'origine au changement de valeur
+Vérifié en preview : gris clair → noir, orange → orange foncé lisible, bleu déjà suffisant inchangé, gris foncé sur fond noir → blanc, fond de page inchangé, texte ajouté après coup corrigé en moins d'une seconde, restauration complète sans résidu, aucune erreur console. 
+
+DC: Sur PC et mobile, en mode « Couleurs Texte-Fond » sur la valeur « Contraste renforcé » les couleurs des hyperliens (liens/liens pointés/liens visités) est bien celle définie dans « Couleurs des liens ». Pourtant « Couleurs des liens » devrait varier en fonction du thème sombre ou clair du navigateur : theme clair = bleu foncé/orange/marron et thème sombre = bleu clair/orange clair/marron clair. Ces réglages doivent être ajustés en fonction de la plus ou moins bonne conception du site web : si, dans une page web en «mode claire» il existe néanmoins des fonds sombres (un bandeau sombre en haut de page par exemple alors que le reste de la page est en fond blanc) alors les liens présents sur ces fonds sombres doivent prendre les couleurs de liens bleu clair/orange clair/marron clair. Et inversement, si, dans une page web en «mode sombre» il existe néanmoins des fonds clairs (un bandeau, un pavé par exemple) alors les liens présents sur ces fonds clairs doivent prendre les couleurs des liens bleu foncé/orange/marron.
+====> Couleurs de liens adaptatives en « Contrastes renforcés » : chaque lien est colorié en fonction de la luminance de son fond réel — fond clair → bleu foncé / orange / marron, fond sombre → bleu clair / orange clair / marron clair. Cela assure un bon rendu même avec des bandeaux sombres dans des pages claires ou inversement. Les liens ne sont plus repeints par le renforcement de contraste.
+
+DC : modification des valeurs par défaut Lecture+ et Vision+
+====> Valeurs par défaut — Lecture+ passe sur « Contrastes renforcés ». Vision+ : multiclics « sans modification / contrastes renforcés / ivoire sur noir » avec contrastes renforcés par défaut, souris « grands curseurs noirs », focus « gros & noir » + 3ᵉ valeur « très gros & noir », liens « bleu foncé - orange - marron ». J'ai aussi aligné l'ascenseur sur noir (il restait blanc, donc invisible sur fond clair) — dites-moi si vous préférez le laisser blanc. Le fichier de configuration passe en 1.0.48, ce qui force la reprise des nouvelles valeurs chez les utilisateurs existants. Vérifié sur le JSON servi.
+
+_______________________
+LOUPE
+DC: intégration du composant Loupe-zoom dans Confort+ en remplacement de la loupe actuelle. On reste sur la duplication de page dans la loupe plutôt que la copie d’écran de page. 
+- 3 types de loupes : Loupe souris, Focus-loupe, Agrandisseur
+- continuité entre les trois types (l’utilisateur augmente le grossissement par ctrl molette ou +- et on passe d’un loupe à l’autre,  allant du ×2 au ×20, sur PC et mobile.)
+- Le bouton multiclic « Loupe » de Confort+ prend pour tous les modes la valeur par défaut «sans loupe». Et les autres valeurs sont pour Vision++ (valeurs Focus loupe ×7 et Agrandisseur ×9, Vision+ (valeurs Loupe-souris ×4 et Focus loupe ×5), Facile+ (valeurs Loupe-souris ×2 et Focus loupe ×5) et les autres modes (qui sont comme Facile+).
+| Type | Niveaux | Comportement |
+| Loupe souris | ×2 à ×4 | Bulle ronde qui suit le pointeur (ou le doigt) et agrandit la zone sous lui. |
+| Focus-loupe | ×2 à ×9 | Fenêtre rectangulaire posée sur l'élément qui reçoit le focus (tabulation sur PC, tap sur mobile) ; pour un élément plus large que la fenêtre, le contenu défile une fois de gauche à droite puis revient, et des flèches invitent à explorer au clavier. |
+| Agrandisseur | ×8 à ×20 | Tout l'écran est agrandi ; on se déplace à la souris, aux flèches ou au doigt, et la page défile quand on atteint un bord. Un clic ou Entrée active l'élément visé au centre. |
+Continuité entre les niveaux. Monter au-delà du maximum d'un type bascule dans le type suivant sans coupure (Loupe souris ×4 → Focus-loupe ×5 → Agrandisseur ×10), et redescendre ramène au type précédent. À chaque palier franchi, le zoom du navigateur est aussi augmenté (+10 % puis +30 % au-dessus du zoom qu'avait l'utilisateur), et il est restitué à l'extinction de la loupe.
+- Réglages fins, dans la fenêtre de réglages déjà utilisée par les autres fonctions : une première ligne pour choisir le type de loupe parmi les trois, une seconde ligne pour choisir le niveau de zoom proposé par ce type. Dès qu'une combinaison sort des valeurs du bouton multiclic, elle devient la quatrième valeur « personnalisée » du bouton, comme pour les autres réglages de Confort+.
+Commandes sur PC pendant que la loupe est active : Ctrl + molette ou les touches + et - pour changer de niveau, les flèches pour explorer dans Focus loupe (Ctrl pour un pas fin), les flèches (Ctrl pour un pas fin) et la souris pour explorer dans Agrandisseur, Échap. ou clic droit pour escamoter la loupe tout en la gardant disponible au bout du pointeur, un clic ou Entrée pour la faire revenir puis valider l'élément visé, Tab pour passer d'élément en élément.
+Commandes sur mobile : un bouton flottant + / - apparaît pendant trois secondes après chaque appui sur le bouton multiclic Loupe et permet de changer le niveau de zoom ; il réapparaît à chaque changement. La Loupe souris et l'Agrandisseur suivent le doigt ; le Focus-loupe se pose sur
+l'élément touché et y reste. 
+Version serveur : Le bouton multiclic et les réglages fins y proposent exactement les mêmes types et niveaux que dans l'extension : la Loupe souris suit le pointeur, le Focus-loupe se pose sur l'élément focalisé et l'Agrandisseur couvre l'écran.
+- Cohabitation : la vocalisation, les contrastes et les autres réglages restent actifs en même
+temps que la loupe ; seul le « Guide de lecture » se met en pause pendant que la loupe est allumée et reprend à son extinction.
+Rendu des élélements d’interface : les trois loupes reprennent l'habillage déjà en place dans Confort+ (bouton multiclic avec son libellé et son icône, fenêtre de réglages fins à deux lignes). La loupe elle-même garde l'aspect de Loupe-Zoom : bulle ronde à faible grossissement, fenêtre à coins arrondis pour le focus, plein écran pour l'agrandisseur, petite étiquette « ×N » qui s'affiche deux secondes à chaque changement de niveau, pastille loupe au-dessus du focus quand la loupe est escamotée, flèches noires sur les bords quand une exploration manuelle est utile, et barres d'arrivée en bord de page. Le bouton + / - mobile est une pastille sombre à fort contraste, posée en bas de l'écran, qui s'efface en fondu.
+====> 
+
+
+Paquet final
+    orange-confort-plus-6.0.0-alpha.1-android.xpi reconstruit et servi (HTTP 200).
+    Site statique régénéré pour le sous-dossier /cpm/ + ZIP de publication à jour (88 fichiers) : confort-plus-site-statique-cpm.zip — à décompresser dans le dossier cpm/ de cpm.oakcess.fr.
+    Page vérifiée : rendu OK, aucune erreur JS.
