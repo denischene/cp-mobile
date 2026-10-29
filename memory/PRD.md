@@ -357,3 +357,51 @@ l'élément ; 1er clic arme / 2e clic active pour les trois types et clic unique
 est éteinte ; Ctrl+Maj+Z allume, éteint et rallume la dernière valeur ; pop-up native
 surmontée par la loupe, contenu agrandi, champ et bouton toujours utilisables ; palette
 au-dessus de la loupe hors pop-up (2147483647 contre 2147483646).
+
+## Journal (29/06/2026 — version 6.0.0.1, cadres embarqués, page d'aide, affinages loupes)
+Version passée de `6.0.0-alpha.1` à **6.0.0.1** (package.json, manifestes Gecko et Chromium,
+noms des paquets, site). Trois paquets publiés : `-android.xpi`, `-firefox.xpi`,
+`-chrome-edge.zip`.
+
+`magnifier.service.ts`
+- **Clic simple** : la toute première interaction pose la loupe sans activer l'objet ; ensuite
+  (`engaged`) un simple clic active hyperliens, boutons, listes déroulantes et tuiles. Le drapeau
+  retombe à l'escamotage, pour que le clic de retour repose la loupe avant d'activer.
+- **Focus-loupe ajusté à l'objet** (`applyFocusSize`) : largeur = largeur de la cible × zoom + 32,
+  bornée à l'écran, hauteur idem bornée à 50 % de l'écran ; un mot tient donc sans défilement, et
+  un long lien ou un long texte occupe toute la largeur avec un peu plus de hauteur.
+- **Mot pointé** (`wordRangeAtPoint`, `focusFromPoint`, `anchorRect`) : au pointage souris sur du
+  texte non cliquable, la fenêtre s'ancre sur le mot sous le curseur (Range) et la vue commence à
+  ce mot ; sur un objet activable c'est l'objet entier (`closest`). Le focus clavier garde
+  l'élément complet. Corrige le décalage constaté au pointage souris.
+- **Infobulles de transition** (`showTransitionHint`, 5 s, trois lignes, au bout du curseur,
+  vocalisées via le nouveau `readAloudServiceInstance.speakText` si Lire à haute voix est actif) :
+  Loupe souris -> Focus-loupe et Focus-loupe -> Agrandisseur, clés `magnifier_hint_focus` /
+  `magnifier_hint_screen` dans les cinq langues.
+- **Éléments hors flux** (`freezeOutOfFlowElements`) : dans la copie de page, tout élément en
+  `position: fixed` ou `sticky` est reposé en `absolute` à ses coordonnées réelles. C'était la
+  cause du cas actu.voici.fr : le bandeau de cookies (div fixed) était focalisable mais jamais
+  zoomé, car dans la copie les éléments fixes se calent sur le conteneur agrandi et partent hors
+  champ.
+- **Cadres embarqués** (`copyMediaElements`) : les `iframe`/`embed`/`object` visibles ne sont plus
+  supprimés de la copie (lecteurs vidéo, formulaires de paiement, PDF), avec `allow` retiré et
+  `pointer-events: none` ; ceux hors écran deviennent un bloc de même taille. Les `video` sont
+  remplacées par leur image courante (canvas, repli sur le poster). **Limite connue** : une iframe
+  est rechargée dans la copie, donc les données déjà saisies dans un formulaire de paiement n'y
+  apparaissent pas.
+- `read-aloud.service.ts` : `speakText()` public (annule la lecture en cours, lit un message
+  d'interface) — n'émet rien si Lire à haute voix est éteint.
+
+Site : nouvelle page **/aide-loupes** (`pages/MagnifierHelpPage.jsx`, route dans `App.js`, lien
+« Aide loupes » dans l'en-tête) décrivant les trois loupes, les six raccourcis PC dont
+Ctrl + Maj + Z, et les gestes mobiles. `.htaccess` renvoie déjà toute URL inconnue sur index.html.
+
+Vérifié en preview (zéro erreur JS) : clics [0, 1, 2] (1er pose, suivants activent) ; fenêtre de
+629×316 px pour un lien de 119 px à ×5 et pleine largeur pour un long texte ; mot sous le curseur
+capturé en Range et vue commençant dessus ; infobulles sur trois lignes aux deux transitions ;
+bandeau fixed reposé en absolute dans la copie et bouton réellement agrandi (×4 mesuré) ; iframe
+conservée à sa place ; page d'aide complète ; alignement clone/fenêtre vérifié au pixel
+(décalage horizontal résiduel = défilement d'exploration volontaire).
+
+Reste ouvert : scintillement de l'Agrandisseur sur pages très animées, mémorisation du dernier
+type d'une page à l'autre, signature Mozilla.

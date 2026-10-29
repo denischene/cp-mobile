@@ -4,7 +4,7 @@ import { DEPLOYMENT } from "@/constants/testIds";
 import { InstallSteps } from "@/components/deployment/InstallSteps";
 
 const BASE = process.env.PUBLIC_URL || "";
-const XPI_PATH = `${BASE}/downloads/orange-confort-plus-6.0.0-alpha.1-android.xpi`;
+const XPI_PATH = `${BASE}/downloads/orange-confort-plus-6.0.0.1-android.xpi`;
 
 export const DownloadCard = () => {
   const xpiUrl = `${window.location.origin}${XPI_PATH}`;
@@ -31,10 +31,10 @@ export const DownloadCard = () => {
               </div>
               <div>
                 <p className="font-semibold text-confort-ink dark:text-white m-0">
-                  orange-confort-plus-6.0.0-alpha.1-android.xpi
+                  orange-confort-plus-6.0.0.1-android.xpi
                 </p>
                 <p className="text-sm text-confort-ink/85 dark:text-white/70 m-0">
-                  Version 6.0.0-alpha.1 · ~1,6 Mo · non signée
+                  Version 6.0.0.1 · ~1,6 Mo · non signée
                 </p>
               </div>
             </div>

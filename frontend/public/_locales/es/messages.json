@@ -1339,5 +1339,11 @@
 	},
 	"magnifier_shortcut": {
 		"message": "Lupa: Ctrl + Mayús + Z para activar o desactivar."
+	},
+	"magnifier_hint_focus": {
+		"message": "Desplácese con\nla tecla Tabulador\ny Mayús+Tabulador"
+	},
+	"magnifier_hint_screen": {
+		"message": "Desplácese con\nel ratón o\nlas teclas de flecha"
 	}
 }

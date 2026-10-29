@@ -1,4 +1,5 @@
-import { Download, Github, Moon, Sun } from "lucide-react";
+import { Download, Github, Moon, Sun, ScanSearch } from "lucide-react";
+import { Link } from "react-router-dom";
 import { DEPLOYMENT } from "@/constants/testIds";
 import { useTheme } from "@/components/deployment/ThemeProvider";
 
@@ -34,6 +35,14 @@ export const SiteHeader = () => {
             <Download className="w-4 h-4" aria-hidden="true" />
             Téléchargement
           </a>
+          <Link
+            to="/aide-loupes"
+            data-testid="help-nav-link"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-white/80 hover:text-confort-orange transition-colors"
+          >
+            <ScanSearch className="w-4 h-4" aria-hidden="true" />
+            Aide loupes
+          </Link>
           <a
             href="https://github.com/Orange-OpenSource/Orange-Confort-plus/tree/develop"
             target="_blank"

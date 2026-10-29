@@ -1321,5 +1321,11 @@
 	},
 	"magnifier_shortcut": {
 		"message": "Loupe : Ctrl + Maj + Z pour activer ou désactiver."
+	},
+	"magnifier_hint_focus": {
+		"message": "Déplacez-vous avec\nles touches Tabulation\net Majuscule+Tabulation"
+	},
+	"magnifier_hint_screen": {
+		"message": "Déplacez-vous avec\nla souris ou\nles touches Flèches"
 	}
 }

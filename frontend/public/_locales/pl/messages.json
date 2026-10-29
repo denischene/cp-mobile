@@ -1336,5 +1336,11 @@
 	},
 	"magnifier_shortcut": {
 		"message": "Lupa: Ctrl + Shift + Z, aby włączyć lub wyłączyć."
+	},
+	"magnifier_hint_focus": {
+		"message": "Poruszaj się\nklawiszem Tab\ni Shift+Tab"
+	},
+	"magnifier_hint_screen": {
+		"message": "Poruszaj się\nmyszą lub\nklawiszami strzałek"
 	}
 }

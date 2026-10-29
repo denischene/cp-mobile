@@ -29,18 +29,20 @@ with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
             z.write(full, os.path.relpath(full, '.'))
             count += 1
 
-names = zipfile.ZipFile(out).namelist()
-toolbar = zipfile.ZipFile(out).read('js/toolbar.min.js').decode('utf-8', 'ignore')
+zf = zipfile.ZipFile(out)
+names = zf.namelist()
+toolbar = zf.read('js/toolbar.min.js').decode('utf-8', 'ignore')
 expected = [
     'index.html', '.htaccess', 'LISEZ-MOI.txt',
-    'downloads/orange-confort-plus-6.0.0-alpha.1-android.xpi',
-    'downloads/orange-confort-plus-6.0.0-alpha.1-firefox.xpi',
-    'downloads/orange-confort-plus-6.0.0-alpha.1-chrome-edge.zip',
+    'downloads/orange-confort-plus-6.0.0.1-android.xpi',
+    'downloads/orange-confort-plus-6.0.0.1-firefox.xpi',
+    'downloads/orange-confort-plus-6.0.0.1-chrome-edge.zip',
     'js/toolbar.min.js', 'css/styles.min.css', '_locales/fr/messages.json',
-    'assets/json/modes-of-use.json',
 ]
+markers = ['freezeOutOfFlowElements', 'copyMediaElements', 'wordRangeAtPoint', 'showTransitionHint', 'applyFocusSize']
 print('files', count, round(os.path.getsize(out) / 1048576, 2), 'Mo')
 print('missing', [k for k in expected if k not in names])
-print('serveur a jour', all(m in toolbar for m in ['magnifier-viewport', 'ensureTopLayer', 'copyTopLayerElements', 'armClick']))
-print('locale loupe', 'full-screen magnifier' in zipfile.ZipFile(out).read('_locales/en/messages.json').decode('utf-8'))
+print('old version left', [n for n in names if 'alpha' in n])
+print('serveur a jour', all(m in toolbar for m in markers))
+print('aide loupes dans le bundle', any('aide-loupes' in zf.read(n).decode('utf-8', 'ignore') for n in names if n.startswith('static/js/') and n.endswith('.js')))
 print('clean index', 'posthog' not in s and '/cpm/static' in s)

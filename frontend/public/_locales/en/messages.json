@@ -1336,5 +1336,11 @@
 	},
 	"magnifier_shortcut": {
 		"message": "Magnifier: Ctrl + Shift + Z to turn on or off."
+	},
+	"magnifier_hint_focus": {
+		"message": "Move around with\nthe Tab key\nand Shift+Tab"
+	},
+	"magnifier_hint_screen": {
+		"message": "Move around with\nthe mouse or\nthe Arrow keys"
 	}
 }
