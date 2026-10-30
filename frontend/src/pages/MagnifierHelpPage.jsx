@@ -134,6 +134,10 @@ export default function MagnifierHelpPage() {
                 Un bouton <strong>+ / −</strong> apparaît trois secondes en bas de l'écran après
                 chaque appui sur le bouton Loupe, et à chaque changement de niveau.
               </li>
+              <li>
+                Un <strong>appui long</strong> n'importe où dans la page allume la loupe sur son
+                dernier réglage, sans ouvrir la palette.
+              </li>
               <li>La Loupe souris et l'Agrandisseur suivent le doigt.</li>
               <li>Le Focus-loupe se pose sur l'élément touché et y reste.</li>
             </ul>

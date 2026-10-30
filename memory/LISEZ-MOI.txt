@@ -1,48 +1,59 @@
-Confort+ Mobile — site statique pour conf-plus-mobile.oakcess.fr/cpm/
-====================================================================
+Confort+ Mobile — site statique pour conf-plus-mobile.oakcess.fr
+===============================================================
 
-CONTENU DE CETTE ARCHIVE
-  index.html                 page du site (chemins préfixés /cpm/)
+Ce site se déploie À LA RACINE du domaine (plus de sous-dossier /cpm/).
+
+CONTENU DE L'ARCHIVE
+  index.html                 page de téléchargement
   .htaccess                  types MIME .xpi + routage des pages + cache (Apache/OVH)
   static/                    JS + CSS du site
+  fonts/                     police Accessible DfA utilisée par le site
   downloads/                 les trois paquets d'extension :
-                               orange-confort-plus-6.0.0.1-android.xpi    (Firefox Nightly Android)
-                               orange-confort-plus-6.0.0.1-firefox.xpi    (Firefox ordinateur)
+                               orange-confort-plus-6.0.0.1-android.xpi     (Firefox Nightly Android)
+                               orange-confort-plus-6.0.0.1-firefox.xpi     (Firefox ordinateur)
                                orange-confort-plus-6.0.0.1-chrome-edge.zip (Chrome et Edge)
-  js/, css/, assets/,
-  fonts/, _locales/          version serveur de Confort+ (barre d'outils)
-  favicon.ico, logo192.png, manifest.json, robots.txt
+  dist/serveur/              VERSION SERVEUR de Confort+, telle que publiée par Orange
+                             (js/, css/, assets/, _locales/, COPYING.txt).
+                             C'est ce dossier que la page charge pour afficher la pastille
+                             et la palette : index.html pointe dessus via
+                             window.__CONFORT_BASE__ = "/dist/serveur".
 
 PAGES DU SITE
-  /cpm/              téléchargement et installation
-  /cpm/aide-loupes   aide des trois loupes et de leurs raccourcis
+  /              téléchargement et installation
+  /aide-loupes   aide des trois loupes et de leurs raccourcis
 
 INSTALLATION SUR OVH
   1. Connecte-toi en FTP/SFTP (ou via l'Explorateur de fichiers OVH).
   2. Place-toi dans la racine web du domaine conf-plus-mobile.oakcess.fr
      (en général www/ ou public_html/).
-  3. Crée un dossier nommé exactement : cpm
-  4. Décompresse l'archive et envoie TOUT son contenu dans ce dossier cpm/
-     (le contenu, pas le dossier zip lui-même). Remplace les fichiers existants.
+  3. Si un ancien dossier cpm/ existe, tu peux le supprimer : le site se déploie
+     désormais à la racine.
+  4. Décompresse l'archive et envoie TOUT son contenu à cette racine, en remplaçant
+     les fichiers existants.
      ATTENTION : le fichier .htaccess est masqué par défaut — pense à activer
      « afficher les fichiers cachés » dans ton client FTP.
   5. Vérifie l'arborescence finale :
-       www/cpm/index.html
-       www/cpm/.htaccess
-       www/cpm/static/...
-       www/cpm/downloads/orange-confort-plus-6.0.0.1-android.xpi
-       www/cpm/js/toolbar.min.js
-  6. Ouvre https://conf-plus-mobile.oakcess.fr/cpm/
+       www/index.html
+       www/.htaccess
+       www/static/...
+       www/downloads/orange-confort-plus-6.0.0.1-android.xpi
+       www/dist/serveur/js/toolbar.min.js
+  6. Ouvre https://conf-plus-mobile.oakcess.fr/
 
-SI LE .XPI SE TÉLÉCHARGE EN .ZIP, OU SI /cpm/aide-loupes RENVOIE UNE ERREUR 404
+METTRE LA VERSION SERVEUR SUR UN AUTRE SITE
+  Copie le dossier dist/serveur/ sur ton site, puis ajoute ces deux lignes avant
+  la fermeture de <body> (adapte le chemin si tu le places ailleurs) :
+
+    <script>window.__CONFORT_BASE__ = "/dist/serveur";</script>
+    <script src="/dist/serveur/js/toolbar.min.js"></script>
+
+  Sans __CONFORT_BASE__, la barre d'outils cherche ses fichiers à la racine du
+  domaine (comportement d'origine d'Orange : contenu de dist/serveur déposé à la racine).
+
+SI LE .XPI SE TÉLÉCHARGE EN .ZIP, OU SI /aide-loupes RENVOIE UNE ERREUR 404
   C'est que le .htaccess n'a pas été envoyé (ou que mod_rewrite est désactivé).
-  Renvoie le fichier .htaccess à la racine de cpm/.
-
-MISE À JOUR PLUS TARD
-  Remplace tout le contenu de cpm/ par la nouvelle archive : la version serveur
-  (js/toolbar.min.js) et les paquets d'extension doivent rester du même lot.
+  Renvoie le fichier .htaccess à la racine.
 
 REMARQUE
   Les paquets ne sont pas signés par Mozilla ni publiés sur les stores : ils se
-  chargent manuellement, le temps d'une session de test (procédures détaillées sur
-  la page du site).
+  chargent manuellement, le temps d'une session de test (procédures sur la page du site).

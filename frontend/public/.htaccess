@@ -1,4 +1,4 @@
-# Confort+ Mobile — site statique (sous-dossier /cpm)
+# Confort+ Mobile — site statique (racine du domaine)
 
 # Types MIME pour les paquets d'extension
 AddType application/x-xpinstall .xpi
@@ -7,12 +7,12 @@ AddType application/wasm .wasm
 # Routage SPA : toute URL inconnue renvoie index.html
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteBase /cpm/
+  RewriteBase /
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
-  RewriteRule . /cpm/index.html [L]
+  RewriteRule . /index.html [L]
 </IfModule>
 
 # Cache

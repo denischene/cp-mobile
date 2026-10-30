@@ -39,7 +39,7 @@
         <div id="root"></div>
         <!-- Confort+ "version serveur" : injecte la pastille et la palette d'accessibilité directement dans cette page -->
         <script>
-          window.__CONFORT_BASE__ = new URL("%PUBLIC_URL%/", window.location.origin).href.replace(/\/$/, "");
+          window.__CONFORT_BASE__ = new URL("%PUBLIC_URL%/dist/serveur/", window.location.origin).href.replace(/\/$/, "");
           window.addEventListener("load", function () {
             try {
               var s = document.createElement("script");

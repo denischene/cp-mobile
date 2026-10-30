@@ -8,14 +8,14 @@ s = s.replace('<script src="https://assets.emergent.sh/scripts/emergent-main.js"
 s = re.sub(r'<script>!function\(e,r\).*?</script>', '', s, flags=re.S)
 open('index.html', 'w', encoding='utf-8').write(s)
 
-for f in ['test-modal.html', 'downloads/confort-plus-site-statique-cpm.zip']:
+for f in ['test-modal.html', 'downloads/confort-plus-site-statique.zip']:
     if os.path.exists(f):
         os.remove(f)
 
 shutil.copy('/app/frontend/public/.htaccess', '.htaccess')
 shutil.copy('/app/memory/LISEZ-MOI.txt', 'LISEZ-MOI.txt')
 
-out = '/app/frontend/public/downloads/confort-plus-site-statique-cpm.zip'
+out = '/app/frontend/public/downloads/confort-plus-site-statique.zip'
 if os.path.exists(out):
     os.remove(out)
 
@@ -31,15 +31,15 @@ with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
 
 zf = zipfile.ZipFile(out)
 names = zf.namelist()
-toolbar = zf.read('js/toolbar.min.js').decode('utf-8', 'ignore')
+toolbar = zf.read('dist/serveur/js/toolbar.min.js').decode('utf-8', 'ignore')
 expected = [
     'index.html', '.htaccess', 'LISEZ-MOI.txt',
-    'downloads/orange-confort-plus-6.0.0.1-android.xpi',
+    'downloads/orange-confort-plus-6.0.0.1-android.xpi', 'dist/serveur/js/toolbar.min.js', 'dist/serveur/assets/json/modes-of-use.json',
     'downloads/orange-confort-plus-6.0.0.1-firefox.xpi',
     'downloads/orange-confort-plus-6.0.0.1-chrome-edge.zip',
-    'js/toolbar.min.js', 'css/styles.min.css', '_locales/fr/messages.json',
+    'dist/serveur/css/styles.min.css', 'dist/serveur/_locales/fr/messages.json', 'fonts/AccessibleDfA-VF.ttf',
 ]
-markers = ['freezeOutOfFlowElements', 'copyMediaElements', 'wordRangeAtPoint', 'showTransitionHint', 'applyFocusSize']
+markers = ['magnifier-viewport', 'CONFORT_BASE', '6.0.0.1']
 print('files', count, round(os.path.getsize(out) / 1048576, 2), 'Mo')
 print('missing', [k for k in expected if k not in names])
 print('old version left', [n for n in names if 'alpha' in n])

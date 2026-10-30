@@ -405,3 +405,46 @@ conservée à sa place ; page d'aide complète ; alignement clone/fenêtre véri
 
 Reste ouvert : scintillement de l'Agrandisseur sur pages très animées, mémorisation du dernier
 type d'une page à l'autre, signature Mozilla.
+
+## Journal (30/06/2026 — appui long, décalage au 1er clic, barres fixes, site à la racine)
+`magnifier.service.ts`
+- **Appui long tactile** (`longPressHandler`, 600 ms, tolérance 12 px) : la loupe se pose sur sa
+  dernière valeur sans ouvrir la palette ; un tap court ou un glissement annule. Écouteurs posés
+  dans le constructeur, donc actifs même loupe éteinte.
+- **Décalage du premier clic sur du texte** : le zoom navigateur (+10 % / +30 %) était appliqué de
+  façon asynchrone APRÈS la copie de page, donc la copie correspondait à une mise en page qui
+  n'existait plus ; le deuxième clic tombait juste parce qu'une mutation avait relancé la copie.
+  `applyBrowserZoom` relance désormais la copie, et le défilement aussi (les éléments collés
+  bougent dans la page).
+- **Barres de menu fixes non agrandies** (lemonde.fr, Wikipédia) : deux causes corrigées.
+  1. Le balayage des éléments `fixed`/`sticky` était abandonné au-delà de 6 000 éléments et
+     comparait deux listes plates ; il devient un parcours parallèle original/copie borné à 12
+     niveaux de profondeur (`MAGNIFIER_MAX_DEPTH`), sans plafond d'éléments.
+  2. Surtout, une copie repositionnée en `absolute` se calait sur le premier ancêtre positionné
+     (très fréquent) et partait ailleurs. `placeInDocument` corrige les coordonnées avec l'origine
+     réelle du body (`documentOrigin`) et **reparente la copie en enfant direct du body copié**.
+     Même traitement pour les `dialog`/`popover`.
+  Vérifié : barre `position: fixed` imbriquée dans un parent `relative` → copie en enfant du body,
+  à 0,0, lien agrandi ×4 et visible dans la fenêtre.
+
+Version serveur et site
+- `VERSION` passe à `6.0.0.1` : « À propos d'Orange Confort+ v6.0.0.1 » (vérifié dans la palette).
+- Les services serveur (`path`, `files`, `i18n`, `icons`) honorent `window.__CONFORT_BASE__`
+  quand il est défini, au lieu de toujours partir de l'origine du domaine. C'est ce qui empêchait
+  la version serveur de fonctionner dans un sous-dossier (le /cpm/ en ligne cherchait ses fichiers
+  à la racine du domaine, d'où une palette sans styles ni icônes).
+- Le site se construit désormais **pour la racine du domaine** (`PUBLIC_URL` vide, `.htaccess` avec
+  `RewriteBase /`), et embarque le dossier **`dist/serveur/`** tel que publié par Orange ; les
+  copies en double à la racine (js, css, assets, _locales) ont été supprimées.
+  Archive renommée `confort-plus-site-statique.zip` (67 fichiers, 6,7 Mo, 55 fichiers sous
+  dist/serveur). LISEZ-MOI réécrit : déploiement racine + réutilisation de dist/serveur ailleurs.
+- Page d'aide : mention de l'appui long ajoutée.
+
+Outillage : `build/terser.js` et `postcss.config.js` utilisaient `assert { type: 'json' }`,
+supprimé dans Node 24 (le pod a changé de version) — remplacé par `with { type: 'json' }`, sans
+quoi aucun paquet ne se construisait plus.
+
+Paquets 6.0.0.1 régénérés (android.xpi, firefox.xpi, chrome-edge.zip) et publiés.
+Vérifié en preview (zéro erreur JS, aucune requête en échec) : palette stylée et icônes servies
+depuis /dist/serveur, version affichée, trois loupes, appui long, alignement stable dès le premier
+clic, page /aide-loupes.
