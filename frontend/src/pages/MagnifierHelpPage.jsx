@@ -18,7 +18,7 @@ const MAGNIFIERS = [
     icon: ScanSearch,
     name: "Focus-loupe",
     levels: "×2 à ×9",
-    what: "Une fenêtre se pose par-dessus l'élément qui reçoit le focus. Elle épouse sa taille : juste un mot, ou toute la largeur de l'écran pour un long texte. Le contenu défile une fois de gauche à droite, puis les flèches prennent le relais.",
+    what: "Deux temps. D'abord le focus se promène dans la page sans grossir, repéré par une petite loupe dans son coin : la tabulation le déplace. Un clic, un tap ou Entrée grossit l'élément visé ; Échap., le clic droit ou le bouton Retour reviennent au premier temps. La fenêtre épouse l'objet : juste un mot, ou toute la largeur pour une phrase, et plus haute pour deux ou trois lignes.",
     when: "Pour naviguer au clavier sans perdre le fil du focus.",
   },
   {
@@ -36,8 +36,8 @@ const SHORTCUTS = [
   ["Ctrl + molette, ou + et −", "Change le niveau de zoom."],
   ["Flèches", "Explore : déplace la vue, ou parcourt le texte dans le Focus-loupe. Avec Ctrl, le pas est plus fin."],
   ["Tabulation", "Passe d'un élément à l'autre ; le Focus-loupe suit."],
-  ["Échap. ou clic droit", "Escamote la loupe, qui reste disponible au bout du pointeur."],
-  ["Clic ou Entrée", "Ramène la loupe escamotée, puis active l'élément visé."],
+  ["Échap. ou clic droit", "Focus-loupe : revient au focus non grossi, là où vous étiez. Loupe souris et Agrandisseur : escamote la loupe, qui reste au bout du pointeur."],
+  ["Clic ou Entrée", "Grossit l'élément visé. Un second clic l'active : un lien ne s'ouvre jamais tant que la loupe n'est pas posée dessus."],
 ];
 
 const Card = ({ children, className = "" }) => (

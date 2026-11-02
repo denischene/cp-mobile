@@ -448,3 +448,49 @@ Paquets 6.0.0.1 régénérés (android.xpi, firefox.xpi, chrome-edge.zip) et pub
 Vérifié en preview (zéro erreur JS, aucune requête en échec) : palette stylée et icônes servies
 depuis /dist/serveur, version affichée, trois loupes, appui long, alignement stable dès le premier
 clic, page /aide-loupes.
+
+## Journal (02/07/2026 — Focus-loupe en deux états, Agrandisseur Edge/Firefox, alignement des clics)
+`magnifier.service.ts`
+- **Agrandisseur figé sur Edge et Firefox** : la copie géante était repositionnée en `left`/`top`
+  à chaque mouvement en plus du `scale`, ce que ces moteurs ne rafraîchissaient plus. Le rendu
+  passe par une **seule transformation** `translate3d(...) scale(...)`, sans layout.
+- **Zones de clic décalées entre vue agrandie et page** : en Agrandisseur la vue était centrée sur
+  le milieu de l'écran alors que le clic part du pointeur. Le point visé reste désormais **sous le
+  curseur** (vérifié : `document.elementFromPoint` et la copie agrandie coïncident).
+- **Focus-loupe repensé en deux états** :
+  * À l'activation, le focus part du **dernier élément focalisé**, sinon du **premier focusable**
+    de la page.
+  * **État pending** : focus visible mais non grossi, déplaçable à Tab / Maj+Tab, avec la pastille
+    loupe (`Magnify_focus`) — ou loupe + bulle (`Magnify-Vocalize_focus`) si Lire à haute voix est
+    actif — posée sur son coin haut droit, et le curseur flèche+loupe
+    (`Cursor-magnify pending`, ou flèche+bulle-loupe si vocalisation) appliqué à toute la page.
+    Images fournies par l'utilisateur, détourées, réduites et embarquées en data-URI dans
+    `constantes.core.ts`.
+  * **État zoomé** : atteint par clic, tap ou Entrée sur l'élément visé — texte brut compris, avec
+    ancrage sur le mot pointé. Échap., clic droit ou Retour Android ramènent au pending en
+    conservant le focus. **Depuis le pending, aucun lien ne peut être activé** ; Échap. y reste
+    transmis à la page pour fermer menus et listes déroulantes. Depuis le zoomé, un clic simple
+    active (`engaged`).
+  * **Défilement du contenu trop large** : 2 s d'attente, aller lent (6 s), retour rapide (1,2 s),
+    puis affichage des **quatre triangles pleins** ; n'importe quelle flèche interrompt le
+    défilement et affiche les triangles.
+  * Les boutons de la palette ne font pas basculer d'état (filtrage `root`/`APP_NAME`) ; « Échap. »
+    et « Clique » agissent comme leurs équivalents clavier.
+- **Loupe sous les champs de recherche (ecosia.org, edf.fr)** : la Loupe souris et le Focus-loupe
+  sont désormais montés en permanence dans le *top layer* (`showPopover`), seul moyen de passer
+  au-dessus des habillages de site ; l'Agrandisseur n'y monte que si une pop-up native est
+  ouverte, pour rester sous la palette Confort+.
+- Correction d'une régression bloquante : le reparentage des éléments `fixed`/`sticky` pendant le
+  parcours décalait les listes d'enfants (`children[index]` indéfini) et faisait échouer toute
+  activation de la loupe ; les paires sont maintenant collectées puis traitées après le parcours.
+
+Site : page /aide-loupes mise à jour (deux temps du Focus-loupe, nouveaux effets d'Échap. et du
+clic). Paquets 6.0.0.1 et archive `confort-plus-site-statique.zip` régénérés (67 fichiers, 6,8 Mo).
+
+Vérifié en preview (zéro erreur JS) : pending à l'activation avec focus, pastille et curseur ;
+Tab conserve le pending ; Entrée et clic passent au zoomé sans activer le lien ; clic suivant
+active ; Échap. et clic droit reviennent au pending en gardant le focus ; phases d'attente et
+d'aller du défilement ; flèche qui stoppe et affiche les quatre triangles ; alignement pointeur /
+vue agrandie en Agrandisseur ; bascule des trois types sans résidu.
+Non vérifiable ici : rendu réel sur Edge et Firefox (le préview ne teste que Chromium) et sur les
+pages citées (ecosia, edf, lemonde) qui ne peuvent pas charger la barre d'outils en test.
