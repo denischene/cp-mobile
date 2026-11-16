@@ -545,3 +545,39 @@ teste que Chromium et ces sites ne chargent pas la barre d'outils).
 
 Paquets 6.0.0.1 régénérés, `frontend/public/dist/serveur/` resynchronisé (pictos inclus), site
 reconstruit et archive `confort-plus-site-statique.zip` recréée (67 fichiers, 6,78 Mo).
+
+## Journal (16/11/2026 bis — règles de vocalisation affinées, réglage « Durée », textes focalisables)
+`read-aloud.service.ts`
+- **Enchaînement des vocalisations corrigé** : `speechSynthesis.cancel()` suivi immédiatement d'un
+  `speak()` était avalé par les moteurs de synthèse, et le `onend` de la vocalisation annulée
+  éteignait celle qui venait d'être lancée. La nouvelle demande est désormais différée de 150 ms
+  après une annulation (jeton `speakToken`) et seul `currentUtterance` peut remettre l'état à
+  l'arrêt. C'est ce qui faisait qu'un 2e clic arrêtait tout au lieu de vocaliser le nouvel élément,
+  au clic comme à la tabulation.
+- **Règles de clic** (vérifiées) : même élément non activable ou fond de page → arrêt ; autre élément
+  non activable → arrêt du précédent et vocalisation du nouveau ; élément activable → vocalisation
+  sans activation, un clic suivant dans la seconde qui suit l'active, au-delà il le vocalise à
+  nouveau.
+- **Réglage de durée** : `duration` ('onDemand' | 'always'), chargé depuis le mode d'usage à chaque
+  activation (`loadDuration`) et modifiable par `setDuration`. En « Sur demande », la mise en focus
+  ne vocalise pas (c'est Entrée qui déclenche) ; en « À chaque fois », la tabulation vocalise.
+- **Blocs de texte focalisables** (`makeTextFocusable`) : titres, paragraphes, listes, légendes et
+  cellules sans tabindex reçoivent `tabindex="0"` (600 max), retirés par `resetBody()` qui purge déjà
+  `[data-cplus-tabindex]`.
+
+Interface « Tous les réglages / Audio / Tous les choix » (`edit-read-aloud.component.ts`) : sous-titre
+**« Étendue : »** avant les valeurs de portée, puis **« Durée : »** avec un second sélecteur à
+chevrons (`Sur demande (Clic, Entrée)` / `À chaque fois (Clic, Tabulation)`), masqué quand l'étendue
+vaut « sans vocalisation ».
+
+`modes-of-use.json` → version **1.0.50** (force la mise à jour du stockage local) et nouveau réglage
+`readAloudDuration` dans les sept modes : `onDemand` pour Facile+, Vision+, Lecture+, Pointage+ et
+Moteur+, `always` pour Vision++ et Lecture++. Libellés ajoutés dans les cinq locales.
+
+Vérifié en preview (zéro erreur JS) : clic texte puis autre texte → deux vocalisations distinctes ;
+deux clics sur le même texte → une seule puis arrêt ; clic sur un lien pendant la vocalisation → le
+lien est vocalisé sans être activé, le clic suivant l'active ; « Sur demande » → 0 vocalisation à la
+tabulation et 1 à Entrée ; « À chaque fois » → chaque tabulation vocalise ; 36 blocs de texte rendus
+focalisables ; page de réglage affichant « Scope: / Duration: » avec masquage correct.
+
+Paquets 6.0.0.1 et archive du site régénérés (67 fichiers, 6,78 Mo).
