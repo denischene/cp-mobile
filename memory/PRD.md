@@ -494,3 +494,54 @@ d'aller du défilement ; flèche qui stoppe et affiche les quatre triangles ; al
 vue agrandie en Agrandisseur ; bascule des trois types sans résidu.
 Non vérifiable ici : rendu réel sur Edge et Firefox (le préview ne teste que Chromium) et sur les
 pages citées (ecosia, edf, lemonde) qui ne peuvent pas charger la barre d'outils en test.
+
+## Journal (16/11/2026 — pictos fournis, cadre d'attente, copie sans la loupe, textes focalisables)
+`constantes.core.ts` : les quatre pictos sont régénérés à partir des images fournies par
+l'utilisateur (`/app/memory/make_pictos.py`, PIL) avec un **liseré blanc épais** (dilatation de
+l'alpha) pour rester lisibles sur fond sombre : deux curseurs 32 px (flèche + loupe, flèche + bulle)
+et deux pictos de coin 40 px (loupe, bulle). Nouvelles constantes : `MAGNIFIER_FRAME_PADDING`,
+`MAGNIFIER_TEXT_SELECTOR`/`MAGNIFIER_TEXT_MAX`/`MAGNIFIER_TEXT_FLAG`,
+`MAGNIFIER_CLONE_DELAY`/`_FAST`/`_SETTLE`.
+
+`magnifier.service.ts`
+- **Copie de page prise sans la loupe** (loupe dans la loupe, zoom sur zoom) : `cloneContent`
+  détache `#cplus-magnifier-root` du document, appelle `buildClone()`, puis le remet en place et
+  purge les enregistrements de l'observateur (`takeRecords`) pour ne pas boucler. La suppression par
+  sélecteur ne suffisait pas : la copie de référence contenait sa propre image agrandie.
+- **Copie fraîche avant chaque rendu de focus** : `setFocusedElement` et `enterZoomed` reclonent
+  avant de calculer la vue — c'est ce qui décalait les termes focalisés sur lemonde.fr (les liens
+  d'évitement apparaissent au focus et poussent la page) et provoquait le « zoom sur zoom » après
+  une entrée en état activé.
+- **Menus déroulants, listes et accordéons** : après une activation, `cloneContentSoon()` reprend la
+  copie à 60 ms puis à 450 ms, donc la loupe agrandit ce qui vient de se dérouler.
+- **Cadre de l'état d'attente** conforme à `Magnify-Vocalize_focus.png` : le cadre épouse l'élément
+  focalisé (bord noir 4 px cerclé de blanc), **loupe dans le coin droit**, **bulle de vocalisation
+  dans le coin gauche** quand Lire à haute voix est actif ; près du haut de l'écran les pictos
+  passent à l'intérieur du cadre (`data-inside`).
+- **Fond sombre** : `applyTheme()`/`isDarkBackground()` (luminance du fond de page, repli sur
+  `prefers-color-scheme`) posent `data-dark` sur la racine ; cadre d'attente et fenêtre de loupe se
+  **cerclent alors de blanc**.
+- **Clic en Focus-loupe déjà zoomé** : un clic sur un autre objet le pose d'abord dans la loupe ;
+  seul un clic sur l'objet déjà zoomé l'active (plus d'activation immédiate d'un lien).
+- **Tabulation en état activé** : `Tab` repasse en état d'attente et laisse l'enchaînement de la
+  page, puis des menus du navigateur, se poursuivre (il restait bloqué sur le dernier élément).
+- **Focus sorti de la page** (palette Confort+, menus du navigateur) : `clearFocus()` efface cadre
+  et fenêtre au lieu de les laisser sur le dernier élément pendant que la tabulation repart en haut.
+- **Textes focalisables** : en Focus-loupe, titres, paragraphes, listes, légendes et cellules sans
+  tabindex reçoivent `tabindex="0"` (600 max, retirés à l'extinction), donc la navigation parcourt
+  tout le contenu et plus seulement liens et boutons.
+- **Infobulle de transition** aussi à l'allumage par le **bouton multiclic Loupe**, et plus seulement
+  à la molette ou aux touches +/-.
+
+Vérifié en preview (zéro erreur JS) : 40 tabulations successives, cadre aligné au pixel sur le focus
+à chaque étape (y compris sur des `p` devenus focalisables) ; pictos visibles pour un élément collé
+en haut ; `Entrée` → état zoomé sans aucune trace de loupe dans la copie ; `Tab` en zoomé → retour en
+attente ; clic souris en zoomé sur un autre lien → aucune navigation, lien posé dans la loupe ;
+`data-dark` et bord blanc sur fond sombre ; menu déroulant de test : 1er clic pose la loupe, 2e
+ouvre le menu et la copie agrandit l'entrée dépliée.
+
+Non vérifiable ici : rendu réel sous Edge/Firefox et sur lemonde.fr, ecosia, EDF (le préview ne
+teste que Chromium et ces sites ne chargent pas la barre d'outils).
+
+Paquets 6.0.0.1 régénérés, `frontend/public/dist/serveur/` resynchronisé (pictos inclus), site
+reconstruit et archive `confort-plus-site-statique.zip` recréée (67 fichiers, 6,78 Mo).
