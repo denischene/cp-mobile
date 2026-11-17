@@ -581,3 +581,48 @@ tabulation et 1 à Entrée ; « À chaque fois » → chaque tabulation vocalise
 focalisables ; page de réglage affichant « Scope: / Duration: » avec masquage correct.
 
 Paquets 6.0.0.1 et archive du site régénérés (67 fichiers, 6,78 Mo).
+
+## Journal (17/11/2026 — boutons de navigation, pastille, vocalisation et loupes)
+- **Tabulation bloquée sur un paragraphe contenant un lien** : un bloc qui contient déjà un élément
+  focalisable ne reçoit plus de `tabindex` (la tabulation y restait prisonnière). Ce sont alors ses
+  **phrases** (`.cplus-read-aloud-span`) situées hors des éléments activables qui deviennent
+  focalisables, de part et d'autre du lien. Le défaut n'était pas reproductible sous Chromium :
+  correction basée sur la cause structurelle (imbrication de focalisables).
+- **Focus-loupe** : la vue est calée sur le **premier mot (ou picto)** de l'élément et non sur son
+  milieu (`focalX`/`focalY` prennent le minimum entre le départ de l'élément et son centre, donc les
+  petits éléments restent centrés).
+- **Modale de cookies (orange.fr)** : l'ordre d'empilement d'origine est conservé lors du reposage
+  des éléments hors flux dans la copie (`stackingOrder`, `placeInDocument(..., zIndex)`) ; un voile
+  gris reposé après la modale la recouvrait. La couche supérieure du navigateur
+  (`dialog[open]`, `[popover]`) passe à `z-index: 2147483000`.
+- **Boutons de navigation compacts** : au repos leur taille se limite au libellé
+  (`padding: 0.15em 0.45em`) ; au survol, au focus ou à l'activation ils reprennent leur grande
+  marge (`1em 2em`), avec transition.
+- **Pastille Confort+ jamais sous les boutons** (`dragDropServiceInstance.avoidButtons()`, appelé à
+  l'ajout des boutons et au redimensionnement) : elle remonte juste au-dessus d'eux et retrouve sa
+  position enregistrée quand les boutons disparaissent (`refreshPosition`).
+- **Moins de boutons sur mobile** (`isMobile()` = `max-width: 36em` ou `pointer: coarse`) :
+  ascenseur inchangé, série navigation réduite à Précédent/Suivant, série complète = Précédent et
+  Suivant au-dessus de Monter et Descendre.
+- **Début puis Suivant** : `currentFocusElt` est remis à zéro par le bouton Début, donc Suivant
+  repart du tout premier élément de la page (souvent un lien d'évitement masqué).
+- **Suivant / Précédent** suivent désormais le focus réel (`focusin` au lieu d'un écouteur `focus`
+  qui ne se déclenchait jamais) et parcourent aussi les blocs de texte rendus focalisables
+  (`domServiceInstance.makeTextBlocksFocusable`, attribut `data-cplus-nav-text`).
+- **Vocalisation** : les boutons de navigation Confort+ ne sont plus vocalisés (exclus par
+  `isInsideApp`) ; c'est l'élément de page qu'ils focalisent qui l'est (`speakFocused`, inactif en
+  « À chaque fois » où le focus déclenche déjà).
+- **Survol prolongé** : Précédent et Suivant répètent l'action au rythme choisi (2 s, 3 s, 6 s),
+  comme Monter et Descendre (`repeatIntervalIds`, `clearHover`).
+- **Défilement Monter/Descendre deux fois plus lent** (`scrollSteps` 100 → 50).
+- `modes-of-use.json` → **1.0.51** ; Moteur+ : `noModifications,scrollSet_clicAction,fullSet_clicAction`
+  avec « Boutons d'ascenseur à cliquer » par défaut.
+
+Vérifié en preview (zéro erreur JS) : boutons 77×33 au repos et 109×60 au survol ; pastille déplacée
+au-dessus des boutons ; Début puis Suivant → premier élément de la page ; clic sur Suivant → seul
+l'élément focalisé est vocalisé ; survol maintenu sur Suivant → trois déplacements en 7 s ; modale de
+test copiée au-dessus de son voile (z 9001 > 9000) et correctement agrandie ; vue Focus-loupe calée
+sur le début du paragraphe ; mobile simulé → Précédent/Suivant seuls au-dessus de Monter/Descendre ;
+paragraphe mixte → plus de tabindex sur le bloc, deux phrases focalisables à l'intérieur.
+
+Paquets 6.0.0.1 et archive du site régénérés (67 fichiers, 6,8 Mo).
