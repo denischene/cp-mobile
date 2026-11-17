@@ -626,3 +626,40 @@ sur le début du paragraphe ; mobile simulé → Précédent/Suivant seuls au-de
 paragraphe mixte → plus de tabindex sur le bloc, deux phrases focalisables à l'intérieur.
 
 Paquets 6.0.0.1 et archive du site régénérés (67 fichiers, 6,8 Mo).
+
+## Journal (17/11/2026 bis — découpage des unités focalisables par étendue)
+`read-aloud.service.ts` — le découpage de la page en unités focalisables dépend maintenant de
+l'étendue choisie (`makeFocusUnits`), les liens et boutons de la page restant leurs propres unités :
+- **vocaliser le mot pointé** : les phrases sont enveloppées dans `.cplus-read-aloud-unit` (unités de
+  navigation), les mots dans `.cplus-read-aloud-span` (unités de pointage) ; les deux coexistent, le
+  pointeur vocalise le mot et la tabulation la phrase.
+- **vocaliser la phrase pointée** : les phrases servent aux deux (`markSpansFocusable`).
+- **vocaliser le paragraphe pointé** : titres, paragraphes, listes, légendes (`markBlocksFocusable`) ;
+  un bloc contenant un lien est découpé en fragments de texte de part et d'autre de l'élément
+  activable (`wrapMixedBlock`), pour que la tabulation ne reste pas prisonnière du bloc.
+- **tout vocaliser** : zones (`markZonesFocusable`) — conteneurs de régions (`header`, `nav`,
+  `section`, `ul`, `table`...) ou blocs avec fond/cadre regroupant au moins deux éléments de texte ou
+  de lien ; seules les zones les plus fines sont retenues (une zone qui en contient une autre n'en est
+  pas une), et `resolveSpeakTarget` renvoie la zone entière au pointage comme au focus.
+- Les unités sans lettre ni chiffre (ponctuation isolée) sont écartées (`hasReadableText`).
+- `processInChunks` accepte une suite (`onDone`) : en mode mot, les phrases sont enveloppées avant les
+  mots, puis les unités sont posées. Limite portée à `TEXT_BLOCK_MAX = 2000` pour couvrir la page
+  entière.
+
+**Priorité des découpages** : `magnifierServiceInstance.syncTextUnits()` (appelé par la loupe et par
+`setReadAloud`) ne pose les unités de la loupe que si Lire à haute voix est éteint ; de même
+`navigationButtonsServiceInstance.applyTextUnits()`. Focus-loupe seul ou boutons de navigation seuls →
+découpage par paragraphes ; dès que Lire à haute voix est actif, c'est son découpage qui prime.
+
+**Focus visible en navigation par boutons** : la feuille de style des boutons de navigation ajoute le
+cadre noir et blanc de Lire à haute voix (`outline: 4px solid #000`, `box-shadow: 0 0 0 8px #fff`) sur
+`:focus` (et non `:focus-visible`, inopérant pour un focus programmatique), donc visible aussi sur
+fond sombre. Lire à haute voix applique le même cadre à ses unités.
+
+Vérifié en preview (zéro erreur JS) : mot → 531 mots et 46 phrases, pointage d'un mot = le mot,
+tabulation = la phrase (vocalisée en « À chaque fois ») ; phrase → 46 unités ; paragraphe → 37 unités
+dont les fragments des blocs mixtes, pointage = paragraphe entier ; tout → 11 zones, pointage = zone
+entière ; loupe seule 68 unités / vocalisation 0, puis loupe 0 / vocalisation 93 ; boutons seuls → 34
+unités de paragraphe et cadre mesuré `4px solid rgb(0,0,0)` + halo blanc 8 px sur l'élément focalisé.
+
+Paquets 6.0.0.1 et archive du site régénérés (67 fichiers, 6,81 Mo).
