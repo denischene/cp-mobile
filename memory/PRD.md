@@ -688,3 +688,27 @@ Focus-loupe en attente → la loupe reste sur l'élément de page (jamais sur un
 d'attente est conservé ; attente de défilement mesurée à 1000 ms.
 
 Paquets 6.0.0.1 et archive du site régénérés.
+
+## Journal (17/11/2026 quater — tabulation dans la palette)
+- **Ouverture par Entrée** : `showToolbar` retrouve `#close-toolbar` au moment de l'ouverture (il
+  n'existe pas encore au `connectedCallback`) et la mise au point est retentée à 0, 120 et 350 ms, le
+  temps que la palette soit réellement affichée (elle apparaît avec une transition, un élément encore
+  masqué n'est pas focalisable). Vérifié : le focus est sur « Replier la palette » dès l'ouverture.
+- **Boucle de tabulation** (`handleToolbarTab` sur le shadow root, `TOOLBAR_FOCUSABLE_SELECTOR`) :
+  après le dernier élément de la page courante, la tabulation revient sur le premier élément de la
+  palette — « Replier la palette » à l'accueil (le bouton de retour y est masqué), « < » sur les pages
+  Réglages, Choix pour ce réglage et Modes d'usage. Maj+Tab reboucle dans l'autre sens.
+- **Modes d'usage** : chaque mode porte désormais un nom de groupe distinct
+  (`modes-<mode>`) car, dans un groupe de boutons radio, seul le mode coché est atteignable à la
+  tabulation ; l'exclusivité est rétablie par `keepSingleChoice` dans la page des modes. Le focus
+  arrive sur le mode déplié, puis Tab → bouton du mode → mode suivant. Entrée déplie le mode focalisé
+  sans valider le formulaire. Les modes grisés sont hors tabulation (bouton compris).
+- **Chevrons des réglages avancés** : quand la flèche actionnée devient grise (première ou dernière
+  valeur), le focus passe à l'autre flèche.
+- **Retour « Choix pour ce réglage » → « Réglages »** : `restoreSettingFocus` rouvre au besoin la
+  catégorie, remet la vue sur le réglage quitté et y repose le focus (bouton multiclic).
+
+Vérifié en preview : focus à l'ouverture, enchaînement mode → bouton → mode suivant, Entrée qui
+déplie un seul mode, bouclage depuis le dernier élément vers le premier (modes et accueil).
+Non vérifié de bout en bout : le transfert de focus entre chevrons et la restitution du focus au
+retour vers les réglages (scénario non reproductible par script, code simple et compilé).
