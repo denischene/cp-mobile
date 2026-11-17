@@ -663,3 +663,28 @@ entière ; loupe seule 68 unités / vocalisation 0, puis loupe 0 / vocalisation 
 unités de paragraphe et cadre mesuré `4px solid rgb(0,0,0)` + halo blanc 8 px sur l'élément focalisé.
 
 Paquets 6.0.0.1 et archive du site régénérés (67 fichiers, 6,81 Mo).
+
+## Journal (17/11/2026 ter — tabulation des zones, découpage autour des liens, loupe et boutons)
+- **Tout vocaliser, tabulation bloquée sur la zone en cours** : deux causes. Les liens et boutons
+  internes restaient dans l'ordre de tabulation (le focus revenait donc dans la zone), et `giveFocus`
+  reprenait le focus au profit de la zone à chaque focus d'un enfant. Désormais `untabInside` sort les
+  liens et boutons d'une zone de l'ordre de tabulation (valeur d'origine mémorisée dans
+  `data-cplus-untab`, restaurée par `clearFocusUnits`), les champs de saisie sont épargnés
+  (`resolveSpeakTarget` renvoie `null` pour eux) et `giveFocus` ne reprend jamais le focus à un
+  élément contenu dans la cible.
+- **Défilement automatique de la vue zoomée** : `MAGNIFIER_EXPLORE_WAIT` 2000 → **1000 ms**.
+- **Blocs contenant un lien** : `domServiceInstance.wrapTextFragments` découpe le bloc en
+  `span.cplus-text-fragment` focalisables — texte avant le lien, lien, texte après (les fragments sans
+  lettre ni chiffre sont ignorés). Utilisé par le Focus-loupe seul et par les boutons de navigation ;
+  les fragments sont déballés à l'extinction.
+- **Boutons Précédent/Suivant à la souris** : `magnifierServiceInstance.isOwnUi()` écarte la palette
+  Confort+ et `#cplus-container-buttons` des événements `pointerdown`, `pointermove` et `click`, donc
+  la loupe ne se pose plus sous la souris et l'état d'attente de la page n'est plus perturbé.
+
+Vérifié en preview (zéro erreur JS) : six tabulations en « tout vocaliser » → enchaînement de zones,
+13 liens sortis de la tabulation puis tous restaurés à l'extinction ; paragraphe mixte découpé en
+`SPAN[tab]` + `A` + « . » et tabulation fragment → lien → titre → paragraphe ; clic sur Suivant avec
+Focus-loupe en attente → la loupe reste sur l'élément de page (jamais sur un bouton) et l'état
+d'attente est conservé ; attente de défilement mesurée à 1000 ms.
+
+Paquets 6.0.0.1 et archive du site régénérés.
