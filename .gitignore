@@ -89,3 +89,11 @@ android-sdk/
 credentials.json
 *.key
 .credentials
+
+# Sources Confort+ : dependances et sorties de build exclues
+confort-src/node_modules/
+confort-src/dist/
+confort-src/docs/
+confort-src/*.xpi
+confort-src/*.zip
+confort-src/web-ext-artifacts/

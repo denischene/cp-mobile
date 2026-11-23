@@ -712,3 +712,15 @@ Vérifié en preview : focus à l'ouverture, enchaînement mode → bouton → m
 déplie un seul mode, bouclage depuis le dernier élément vers le premier (modes et accueil).
 Non vérifié de bout en bout : le transfert de focus entre chevrons et la restitution du focus au
 retour vers les réglages (scénario non reproductible par script, code simple et compilé).
+
+## Journal (17/11/2026 quinquies — code source intégré au dépôt principal)
+`confort-src` était un dépôt Git imbriqué : le dépôt principal n'en gardait qu'un lien (gitlink), donc
+l'export GitHub ne contenait aucun fichier source. Le lien a été retiré de l'index
+(`git rm --cached confort-src`), le `.git` imbriqué supprimé, et les 325 fichiers source indexés
+(`src/`, `build/`, `tsconfig*.json`, `package.json`, manifestes, locales, JSON des modes).
+Exclusions ajoutées dans `/app/.gitignore` : `confort-src/node_modules/`, `confort-src/dist/`,
+`confort-src/docs/`, `confort-src/*.xpi`, `confort-src/*.zip`, `confort-src/web-ext-artifacts/`
+(dépendances et sorties de build, régénérables par `npm install && npm run package:all`).
+La version serveur livrée reste suivie dans `frontend/public/dist/serveur/`.
+Note : l'historique Git amont d'Orange Confort+ contenu dans le `.git` imbriqué n'est plus présent
+localement (il reste disponible sur le dépôt public d'origine).

@@ -1,0 +1,35 @@
+#cplus-toolbar {
+        box-shadow: rgb(156, 156, 156) 0 0 8px 2px;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        width: 24em;
+        /* Never overflow narrow mobile viewports */
+        max-width: 100vw;
+        max-height: 100vh;
+        /* Use dynamic viewport height so the mobile browser toolbars
+           don't hide the bottom of the palette */
+        max-height: 100dvh;
+        overflow: auto;
+        transition:
+                transform .3s ease-in-out,
+                visibility .3s ease-in-out;
+        will-change: transform, visibility;
+        z-index: calc(infinity);
+
+        &.close {
+                transform: translateX(100%);
+                visibility: hidden;
+        }
+}
+
+/* Mobile / small screens (phones): the palette becomes a full-width panel
+   so every control (usage modes, multi-click buttons, settings) stays
+   reachable and comfortably sized. Desktop keeps its 24em side panel. */
+@media (max-width: 36em) {
+        #cplus-toolbar {
+                width: 100vw;
+                max-width: 100vw;
+                /* Respect device notches / rounded corners */
+                padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+}
